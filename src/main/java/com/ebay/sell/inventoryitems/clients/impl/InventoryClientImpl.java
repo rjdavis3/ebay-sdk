@@ -6,7 +6,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
 
 import com.ebay.sell.inventoryitems.clients.InventoryClient;
 import com.ebay.sell.inventoryitems.models.InventoryItem;
@@ -15,8 +14,7 @@ public class InventoryClientImpl implements InventoryClient {
 
 	private final Client REST_CLIENT = ClientBuilder.newClient()
 			.property(ClientProperties.CONNECT_TIMEOUT, 60000)
-			.property(ClientProperties.READ_TIMEOUT, 600000)
-			.register(MoxyJsonFeature.class);
+			.property(ClientProperties.READ_TIMEOUT, 600000);
 
 	private static final String OAUTH_USER_TOKEN_PREFIX = "Bearer ";
 	private static final String AUTHORIZATION_HEADER = "Authorization";

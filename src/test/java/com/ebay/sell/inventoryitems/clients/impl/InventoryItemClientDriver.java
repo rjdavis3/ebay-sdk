@@ -9,7 +9,7 @@ import com.ebay.sell.inventoryitems.models.InventoryItem;
 
 public class InventoryItemClientDriver {
 
-	private static final String OAUTH_USER_TOKEN = "x";
+	private static final String OAUTH_USER_TOKEN = System.getenv("EBAY_OAUTH_USER_TOKEN");
 	
 	@Test
 	public void givenSomeSkuWhenRetrievingInventoryItemThenReturnInventoryItem() throws Exception {
