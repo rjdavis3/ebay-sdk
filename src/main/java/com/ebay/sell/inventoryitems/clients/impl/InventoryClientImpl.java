@@ -1,42 +1,43 @@
 package com.ebay.sell.inventoryitems.clients.impl;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.glassfish.jersey.client.ClientProperties;
 
 import com.ebay.sell.inventoryitems.clients.InventoryClient;
 import com.ebay.sell.inventoryitems.models.InventoryItem;
 
 public class InventoryClientImpl implements InventoryClient {
 
-	private final Client REST_CLIENT = ClientBuilder.newClient()
-			.property(ClientProperties.CONNECT_TIMEOUT, 60000)
-			.property(ClientProperties.READ_TIMEOUT, 600000);
+	static final String INVENTORY_ITEM_RESOURCE = "https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item";
+	static final String AUTHORIZATION_HEADER = "Authorization";
+	static final String OAUTH_USER_TOKEN_PREFIX = "Bearer ";
 
-	private static final String OAUTH_USER_TOKEN_PREFIX = "Bearer ";
-	private static final String AUTHORIZATION_HEADER = "Authorization";
-	private static final String INVENTORY_ITEM_RESOURCE = "https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item";
+	private final Client client;
+	private final String oauthUserToken;
 
-	private String oauthUserToken;
-
-	public InventoryClientImpl(final String oauthUserToken) {
-		this.oauthUserToken = new StringBuilder()
-				.append(OAUTH_USER_TOKEN_PREFIX).append(oauthUserToken)
-				.toString();
+	public InventoryClientImpl(final Client client, final String oauthUserToken) {
+		this.client = client;
+		this.oauthUserToken = new StringBuilder().append(OAUTH_USER_TOKEN_PREFIX).append(oauthUserToken).toString();
 	}
 
 	@Override
 	public InventoryItem get(final String sku) {
-		final Response response = REST_CLIENT.target(INVENTORY_ITEM_RESOURCE)
-				.path(sku).request()
+		final Response response = client.target(INVENTORY_ITEM_RESOURCE).path(sku).request()
 				.header(AUTHORIZATION_HEADER, oauthUserToken).get();
 		if (Status.OK.getStatusCode() == response.getStatus()) {
 			return response.readEntity(InventoryItem.class);
 		}
 		return null;
+	}
+
+	@Override
+	public void create(final InventoryItem inventoryItem) {
+		final Entity<InventoryItem> inventoryItemEntity = Entity.entity(inventoryItem, MediaType.APPLICATION_JSON);
+		client.target(INVENTORY_ITEM_RESOURCE).path(inventoryItem.getSku()).request()
+				.header(AUTHORIZATION_HEADER, oauthUserToken).put(inventoryItemEntity);
 	}
 
 }
