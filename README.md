@@ -2,6 +2,10 @@
 
 Java SDK for eBay REST APIs
 
+| Service   | Develop | Master |
+|-----------|---------|--------|
+| CI Status | [![Build Status](https://travis-ci.org/rjdavis3/ebay-sdk.svg?branch=develop)](https://travis-ci.org/rjdavis3/ebay-sdk) | [![Build Status](https://travis-ci.org/rjdavis3/ebay-sdk.svg?branch=master)](https://travis-ci.org/rjdavis3/ebay-sdk) |
+
 ## Prerequisites to build
 
 	1. Install Maven
