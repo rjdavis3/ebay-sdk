@@ -27,7 +27,7 @@ public class InventoryItemImplTest {
 
 	private static final String SOME_OAUTH_USER_TOKEN = "v1-ebay-oauth-token";
 	private static final String SOME_SKU = "1444";
-	private static final String SOME_NOT_FOUND_INVENTORY_ITEM_EBAY_ERROR = "{\r\n  \"errors\": [\r\n    {\r\n      \"errorId\": 25710,\r\n      \"domain\": \"API_INVENTORY\",\r\n      \"subdomain\": \"Selling\",\r\n      \"category\": \"REQUEST\",\r\n      \"message\": \"We didn't find the entity you are requesting. Please verify the request\"\r\n    }\r\n  ]\r\n}";
+	private static final String SOME_EBAY_ERROR_MESSAGE = "{\r\n  \"errors\": [\r\n    {\r\n      \"errorId\": 25710,\r\n      \"domain\": \"API_INVENTORY\",\r\n      \"subdomain\": \"Selling\",\r\n      \"category\": \"REQUEST\",\r\n      \"message\": \"We didn't find the entity you are requesting. Please verify the request\"\r\n    }\r\n  ]\r\n}";
 
 	private InventoryClient inventoryClient;
 
@@ -69,7 +69,7 @@ public class InventoryItemImplTest {
 	}
 
 	@Test(expected = EbayErrorException.class)
-	public void givenSomeInvalidSkuWhenRetrievingInventoryItemThenThrowNewEbayErrorExceptionWith404StatusCodeAnd25710ErrorId() {
+	public void givenSomeInvalidSkuWhenRetrievingInventoryItemThenThrowNewEbayErrorExceptionWith404StatusCodeAndSomeEbayErrorMessage() {
 		final Status expectedStatus = Status.NOT_FOUND;
 		final InventoryItem expectedInventoryItem = new InventoryItem();
 		expectedInventoryItem.setSku(SOME_SKU);
@@ -88,7 +88,7 @@ public class InventoryItemImplTest {
 		final int statusCode = expectedStatus.getStatusCode();
 		when(response.getStatus()).thenReturn(statusCode);
 		when(response.readEntity(String.class)).thenReturn(
-				SOME_NOT_FOUND_INVENTORY_ITEM_EBAY_ERROR);
+				SOME_EBAY_ERROR_MESSAGE);
 		when(invocationBuilder.get()).thenReturn(response);
 
 		inventoryClient.get(SOME_SKU);
@@ -119,7 +119,7 @@ public class InventoryItemImplTest {
 	}
 
 	@Test(expected = EbayErrorException.class)
-	public void givenSomeInventoryItemWithInvalidConditionWhenUpdatingInventoryItemThenThrowNewEbayErrorExceptionWith400StatusCodeAnd2004ErrorId() {
+	public void givenSomeInventoryItemWithInvalidConditionWhenUpdatingInventoryItemThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
 		final InventoryItem inventoryItem = new InventoryItem();
 		inventoryItem.setSku(SOME_SKU);
 		inventoryItem.setCondition("JUNK");
@@ -138,8 +138,60 @@ public class InventoryItemImplTest {
 		final Response response = mock(Response.class);
 		final int statusCode = expectedStatus.getStatusCode();
 		when(response.getStatus()).thenReturn(statusCode);
+		when(response.readEntity(String.class)).thenReturn(
+				SOME_EBAY_ERROR_MESSAGE);
 		when(invocationBuilder.put(any(Entity.class))).thenReturn(response);
 
 		inventoryClient.create(inventoryItem);
+	}
+
+	@Test
+	public void givenSomeValidSkuWhenDeletingInventoryItemThenReturn204StatusCode() {
+		final Status expectedStatus = Status.NO_CONTENT;
+		final InventoryItem expectedInventoryItem = new InventoryItem();
+		expectedInventoryItem.setSku(SOME_SKU);
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+				.thenReturn(webTarget);
+		when(webTarget.path(SOME_SKU)).thenReturn(webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						anyString())).thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(invocationBuilder.delete()).thenReturn(response);
+
+		inventoryClient.delete(SOME_SKU);
+	}
+
+	@Test(expected = EbayErrorException.class)
+	public void givenSomeInvalidSkuWhenDeletingInventoryItemThenThrowNewEbayErrorExceptionWith404StatusCodeAndSomeEbayErrorMessage() {
+		final Status expectedStatus = Status.NOT_FOUND;
+		final InventoryItem expectedInventoryItem = new InventoryItem();
+		expectedInventoryItem.setSku(SOME_SKU);
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+				.thenReturn(webTarget);
+		when(webTarget.path(SOME_SKU)).thenReturn(webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						anyString())).thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(response.readEntity(String.class)).thenReturn(
+				SOME_EBAY_ERROR_MESSAGE);
+		when(invocationBuilder.delete()).thenReturn(response);
+
+		inventoryClient.delete(SOME_SKU);
 	}
 }

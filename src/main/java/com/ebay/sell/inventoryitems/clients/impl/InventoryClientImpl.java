@@ -50,4 +50,14 @@ public class InventoryClientImpl implements InventoryClient {
 		}
 	}
 
+	@Override
+	public void delete(final String sku) {
+		final Response response = client.target(INVENTORY_ITEM_RESOURCE)
+				.path(sku).request()
+				.header(AUTHORIZATION_HEADER, oauthUserToken).delete();
+		if (Status.NO_CONTENT.getStatusCode() != response.getStatus()) {
+			throw new EbayErrorException(response);
+		}
+	}
+
 }

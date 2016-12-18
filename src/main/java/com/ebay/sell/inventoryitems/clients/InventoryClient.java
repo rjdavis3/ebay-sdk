@@ -8,4 +8,6 @@ public interface InventoryClient {
 
 	public void create(final InventoryItem inventoryItem);
 
+	public void delete(final String sku);
+
 }
