@@ -10,11 +10,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ebay.exceptions.EbayErrorException;
-import com.ebay.sell.inventoryitems.clients.InventoryClient;
+import com.ebay.sell.inventoryitems.clients.InventoryItemClient;
 import com.ebay.sell.inventoryitems.models.InventoryItem;
 import com.ebay.sell.inventoryitems.models.InventoryItems;
 
-public class InventoryClientDriver {
+public class InventoryItemClientDriver {
 
 	private final Client REST_CLIENT = ClientBuilder.newClient()
 			.property(ClientProperties.CONNECT_TIMEOUT, 60000)
@@ -22,14 +22,14 @@ public class InventoryClientDriver {
 	private static final String OAUTH_USER_TOKEN = System
 			.getenv("EBAY_OAUTH_USER_TOKEN");
 
-	private final InventoryClient inventoryClient = new InventoryClientImpl(
+	private final InventoryItemClient inventoryItemClient = new InventoryItemClientImpl(
 			REST_CLIENT, OAUTH_USER_TOKEN);
 
 	@Test
 	@Ignore
 	public void givenSomeSkuWhenRetrievingInventoryItemThenReturnInventoryItem()
 			throws Exception {
-		final InventoryItem actualInventoryItem = inventoryClient
+		final InventoryItem actualInventoryItem = inventoryItemClient
 				.getInventoryItem("540008");
 
 		assertEquals("540008", actualInventoryItem.getSku());
@@ -40,13 +40,13 @@ public class InventoryClientDriver {
 	@Ignore
 	public void givenSomeInvalidSkuWhenRetrievingInventoryItemThenThrowNewEbayErrorException()
 			throws Exception {
-		inventoryClient.getInventoryItem("540009103184");
+		inventoryItemClient.getInventoryItem("540009103184");
 	}
 
 	@Test
 	public void givenSomeLimitAndSomeOffsetWhenRetrievingInventoryItemsThenReturnInventoryItems()
 			throws Exception {
-		final InventoryItems actualInventoryItems = inventoryClient
+		final InventoryItems actualInventoryItems = inventoryItemClient
 				.getInventoryItems(2, 1);
 
 		assertEquals(1, actualInventoryItems.getLimit());

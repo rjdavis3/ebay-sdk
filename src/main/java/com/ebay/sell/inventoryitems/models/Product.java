@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Product {
 
-	private Aspects aspects;
 	private String brand;
 	private String description;
 	private List<String> ean = new LinkedList<String>();
@@ -15,14 +14,6 @@ public class Product {
 	private String subtitle;
 	private String title;
 	private List<String> upc = new LinkedList<String>();
-
-	public Aspects getAspects() {
-		return aspects;
-	}
-
-	public void setAspects(Aspects aspects) {
-		this.aspects = aspects;
-	}
 
 	public String getBrand() {
 		return brand;

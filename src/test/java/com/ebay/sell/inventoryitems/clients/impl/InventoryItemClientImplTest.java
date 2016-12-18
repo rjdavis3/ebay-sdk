@@ -20,17 +20,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.ebay.exceptions.EbayErrorException;
-import com.ebay.sell.inventoryitems.clients.InventoryClient;
+import com.ebay.sell.inventoryitems.clients.InventoryItemClient;
 import com.ebay.sell.inventoryitems.models.InventoryItem;
 import com.ebay.sell.inventoryitems.models.InventoryItems;
 
-public class InventoryItemImplTest {
+public class InventoryItemClientImplTest {
 
 	private static final String SOME_OAUTH_USER_TOKEN = "v1-ebay-oauth-token";
 	private static final String SOME_SKU = "1444";
 	private static final String SOME_EBAY_ERROR_MESSAGE = "{\r\n  \"errors\": [\r\n    {\r\n      \"errorId\": 25710,\r\n      \"domain\": \"API_INVENTORY\",\r\n      \"subdomain\": \"Selling\",\r\n      \"category\": \"REQUEST\",\r\n      \"message\": \"We didn't find the entity you are requesting. Please verify the request\"\r\n    }\r\n  ]\r\n}";
 
-	private InventoryClient inventoryClient;
+	private InventoryItemClient inventoryItemClient;
 
 	@Mock
 	private Client client;
@@ -38,7 +38,7 @@ public class InventoryItemImplTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		inventoryClient = new InventoryClientImpl(client, SOME_OAUTH_USER_TOKEN);
+		inventoryItemClient = new InventoryItemClientImpl(client, SOME_OAUTH_USER_TOKEN);
 	}
 
 	@Test
@@ -48,14 +48,14 @@ public class InventoryItemImplTest {
 		expectedInventoryItem.setSku(SOME_SKU);
 
 		final WebTarget webTarget = mock(WebTarget.class);
-		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+		when(client.target(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE))
 				.thenReturn(webTarget);
 		when(webTarget.path(SOME_SKU)).thenReturn(webTarget);
 		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
 		when(webTarget.request()).thenReturn(invocationBuilder);
 		when(
 				invocationBuilder.header(
-						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						eq(InventoryItemClientImpl.AUTHORIZATION_HEADER),
 						anyString())).thenReturn(invocationBuilder);
 		final Response response = mock(Response.class);
 		final int statusCode = expectedStatus.getStatusCode();
@@ -64,7 +64,7 @@ public class InventoryItemImplTest {
 				expectedInventoryItem);
 		when(invocationBuilder.get()).thenReturn(response);
 
-		final InventoryItem actualInventoryItem = inventoryClient
+		final InventoryItem actualInventoryItem = inventoryItemClient
 				.getInventoryItem(SOME_SKU);
 
 		assertEquals(SOME_SKU, actualInventoryItem.getSku());
@@ -77,14 +77,14 @@ public class InventoryItemImplTest {
 		expectedInventoryItem.setSku(SOME_SKU);
 
 		final WebTarget webTarget = mock(WebTarget.class);
-		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+		when(client.target(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE))
 				.thenReturn(webTarget);
 		when(webTarget.path(SOME_SKU)).thenReturn(webTarget);
 		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
 		when(webTarget.request()).thenReturn(invocationBuilder);
 		when(
 				invocationBuilder.header(
-						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						eq(InventoryItemClientImpl.AUTHORIZATION_HEADER),
 						anyString())).thenReturn(invocationBuilder);
 		final Response response = mock(Response.class);
 		final int statusCode = expectedStatus.getStatusCode();
@@ -93,7 +93,7 @@ public class InventoryItemImplTest {
 				SOME_EBAY_ERROR_MESSAGE);
 		when(invocationBuilder.get()).thenReturn(response);
 
-		inventoryClient.getInventoryItem(SOME_SKU);
+		inventoryItemClient.getInventoryItem(SOME_SKU);
 	}
 
 	@Test
@@ -103,21 +103,21 @@ public class InventoryItemImplTest {
 		final Status expectedStatus = Status.NO_CONTENT;
 
 		final WebTarget webTarget = mock(WebTarget.class);
-		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+		when(client.target(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE))
 				.thenReturn(webTarget);
 		when(webTarget.path(SOME_SKU)).thenReturn(webTarget);
 		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
 		when(webTarget.request()).thenReturn(invocationBuilder);
 		when(
 				invocationBuilder.header(
-						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						eq(InventoryItemClientImpl.AUTHORIZATION_HEADER),
 						anyString())).thenReturn(invocationBuilder);
 		final Response response = mock(Response.class);
 		final int statusCode = expectedStatus.getStatusCode();
 		when(response.getStatus()).thenReturn(statusCode);
 		when(invocationBuilder.put(any(Entity.class))).thenReturn(response);
 
-		inventoryClient.updateInventoryItem(inventoryItem);
+		inventoryItemClient.updateInventoryItem(inventoryItem);
 	}
 
 	@Test(expected = EbayErrorException.class)
@@ -128,14 +128,14 @@ public class InventoryItemImplTest {
 		final Status expectedStatus = Status.BAD_REQUEST;
 
 		final WebTarget webTarget = mock(WebTarget.class);
-		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+		when(client.target(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE))
 				.thenReturn(webTarget);
 		when(webTarget.path(SOME_SKU)).thenReturn(webTarget);
 		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
 		when(webTarget.request()).thenReturn(invocationBuilder);
 		when(
 				invocationBuilder.header(
-						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						eq(InventoryItemClientImpl.AUTHORIZATION_HEADER),
 						anyString())).thenReturn(invocationBuilder);
 		final Response response = mock(Response.class);
 		final int statusCode = expectedStatus.getStatusCode();
@@ -144,7 +144,7 @@ public class InventoryItemImplTest {
 				SOME_EBAY_ERROR_MESSAGE);
 		when(invocationBuilder.put(any(Entity.class))).thenReturn(response);
 
-		inventoryClient.updateInventoryItem(inventoryItem);
+		inventoryItemClient.updateInventoryItem(inventoryItem);
 	}
 
 	@Test
@@ -154,21 +154,21 @@ public class InventoryItemImplTest {
 		expectedInventoryItem.setSku(SOME_SKU);
 
 		final WebTarget webTarget = mock(WebTarget.class);
-		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+		when(client.target(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE))
 				.thenReturn(webTarget);
 		when(webTarget.path(SOME_SKU)).thenReturn(webTarget);
 		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
 		when(webTarget.request()).thenReturn(invocationBuilder);
 		when(
 				invocationBuilder.header(
-						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						eq(InventoryItemClientImpl.AUTHORIZATION_HEADER),
 						anyString())).thenReturn(invocationBuilder);
 		final Response response = mock(Response.class);
 		final int statusCode = expectedStatus.getStatusCode();
 		when(response.getStatus()).thenReturn(statusCode);
 		when(invocationBuilder.delete()).thenReturn(response);
 
-		inventoryClient.deleteInventoryItem(SOME_SKU);
+		inventoryItemClient.deleteInventoryItem(SOME_SKU);
 	}
 
 	@Test(expected = EbayErrorException.class)
@@ -178,14 +178,14 @@ public class InventoryItemImplTest {
 		expectedInventoryItem.setSku(SOME_SKU);
 
 		final WebTarget webTarget = mock(WebTarget.class);
-		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+		when(client.target(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE))
 				.thenReturn(webTarget);
 		when(webTarget.path(SOME_SKU)).thenReturn(webTarget);
 		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
 		when(webTarget.request()).thenReturn(invocationBuilder);
 		when(
 				invocationBuilder.header(
-						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						eq(InventoryItemClientImpl.AUTHORIZATION_HEADER),
 						anyString())).thenReturn(invocationBuilder);
 		final Response response = mock(Response.class);
 		final int statusCode = expectedStatus.getStatusCode();
@@ -194,7 +194,7 @@ public class InventoryItemImplTest {
 				SOME_EBAY_ERROR_MESSAGE);
 		when(invocationBuilder.delete()).thenReturn(response);
 
-		inventoryClient.deleteInventoryItem(SOME_SKU);
+		inventoryItemClient.deleteInventoryItem(SOME_SKU);
 	}
 
 	@Test
@@ -207,20 +207,20 @@ public class InventoryItemImplTest {
 		expectedInventoryItems.setLimit(limit);
 
 		final WebTarget webTarget = mock(WebTarget.class);
-		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+		when(client.target(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE))
 				.thenReturn(webTarget);
 		when(
-				webTarget.queryParam(InventoryClientImpl.LIMIT_QUERY_PARAMETER,
+				webTarget.queryParam(InventoryItemClientImpl.LIMIT_QUERY_PARAMETER,
 						limit)).thenReturn(webTarget);
 		when(
 				webTarget.queryParam(
-						InventoryClientImpl.OFFSET_QUERY_PARAMETER, offset))
+						InventoryItemClientImpl.OFFSET_QUERY_PARAMETER, offset))
 				.thenReturn(webTarget);
 		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
 		when(webTarget.request()).thenReturn(invocationBuilder);
 		when(
 				invocationBuilder.header(
-						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						eq(InventoryItemClientImpl.AUTHORIZATION_HEADER),
 						anyString())).thenReturn(invocationBuilder);
 		final Response response = mock(Response.class);
 		final int statusCode = expectedStatus.getStatusCode();
@@ -229,7 +229,7 @@ public class InventoryItemImplTest {
 				expectedInventoryItems);
 		when(invocationBuilder.get()).thenReturn(response);
 
-		final InventoryItems actualInventoryItems = inventoryClient
+		final InventoryItems actualInventoryItems = inventoryItemClient
 				.getInventoryItems(offset, limit);
 
 		assertEquals(limit, actualInventoryItems.getLimit());
@@ -243,20 +243,20 @@ public class InventoryItemImplTest {
 		final Status expectedStatus = Status.UNAUTHORIZED;
 
 		final WebTarget webTarget = mock(WebTarget.class);
-		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+		when(client.target(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE))
 				.thenReturn(webTarget);
 		when(
-				webTarget.queryParam(InventoryClientImpl.LIMIT_QUERY_PARAMETER,
+				webTarget.queryParam(InventoryItemClientImpl.LIMIT_QUERY_PARAMETER,
 						limit)).thenReturn(webTarget);
 		when(
 				webTarget.queryParam(
-						InventoryClientImpl.OFFSET_QUERY_PARAMETER, offset))
+						InventoryItemClientImpl.OFFSET_QUERY_PARAMETER, offset))
 				.thenReturn(webTarget);
 		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
 		when(webTarget.request()).thenReturn(invocationBuilder);
 		when(
 				invocationBuilder.header(
-						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						eq(InventoryItemClientImpl.AUTHORIZATION_HEADER),
 						anyString())).thenReturn(invocationBuilder);
 		final Response response = mock(Response.class);
 		final int statusCode = expectedStatus.getStatusCode();
@@ -265,7 +265,7 @@ public class InventoryItemImplTest {
 				SOME_EBAY_ERROR_MESSAGE);
 		when(invocationBuilder.get()).thenReturn(response);
 
-		inventoryClient.getInventoryItems(offset, limit);
+		inventoryItemClient.getInventoryItems(offset, limit);
 	}
 
 }

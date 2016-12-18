@@ -7,11 +7,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.ebay.exceptions.EbayErrorException;
-import com.ebay.sell.inventoryitems.clients.InventoryClient;
+import com.ebay.sell.inventoryitems.clients.InventoryItemClient;
 import com.ebay.sell.inventoryitems.models.InventoryItem;
 import com.ebay.sell.inventoryitems.models.InventoryItems;
 
-public class InventoryClientImpl implements InventoryClient {
+public class InventoryItemClientImpl implements InventoryItemClient {
 
 	static final String INVENTORY_ITEM_RESOURCE = "https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item";
 	static final String AUTHORIZATION_HEADER = "Authorization";
@@ -22,7 +22,7 @@ public class InventoryClientImpl implements InventoryClient {
 	private final Client client;
 	private final String oauthUserToken;
 
-	public InventoryClientImpl(final Client client, final String oauthUserToken) {
+	public InventoryItemClientImpl(final Client client, final String oauthUserToken) {
 		this.client = client;
 		this.oauthUserToken = new StringBuilder()
 				.append(OAUTH_USER_TOKEN_PREFIX).append(oauthUserToken)
