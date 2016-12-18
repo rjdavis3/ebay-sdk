@@ -1,12 +1,14 @@
 package com.ebay.sell.inventoryitems.clients.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -90,5 +92,54 @@ public class InventoryItemImplTest {
 		when(invocationBuilder.get()).thenReturn(response);
 
 		inventoryClient.get(SOME_SKU);
+	}
+
+	@Test
+	public void givenSomeInventoryItemWhenCreatingInventoryItemThenReturn204StatusCode() {
+		final InventoryItem inventoryItem = new InventoryItem();
+		inventoryItem.setSku(SOME_SKU);
+		final Status expectedStatus = Status.NO_CONTENT;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+				.thenReturn(webTarget);
+		when(webTarget.path(SOME_SKU)).thenReturn(webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						anyString())).thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(invocationBuilder.put(any(Entity.class))).thenReturn(response);
+
+		inventoryClient.create(inventoryItem);
+	}
+
+	@Test(expected = EbayErrorException.class)
+	public void givenSomeInventoryItemWithInvalidConditionWhenUpdatingInventoryItemThenThrowNewEbayErrorExceptionWith400StatusCodeAnd2004ErrorId() {
+		final InventoryItem inventoryItem = new InventoryItem();
+		inventoryItem.setSku(SOME_SKU);
+		inventoryItem.setCondition("JUNK");
+		final Status expectedStatus = Status.BAD_REQUEST;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(client.target(InventoryClientImpl.INVENTORY_ITEM_RESOURCE))
+				.thenReturn(webTarget);
+		when(webTarget.path(SOME_SKU)).thenReturn(webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(InventoryClientImpl.AUTHORIZATION_HEADER),
+						anyString())).thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(invocationBuilder.put(any(Entity.class))).thenReturn(response);
+
+		inventoryClient.create(inventoryItem);
 	}
 }
