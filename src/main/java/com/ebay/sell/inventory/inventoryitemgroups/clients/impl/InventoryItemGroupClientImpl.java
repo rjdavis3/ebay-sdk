@@ -18,8 +18,6 @@ public class InventoryItemGroupClientImpl implements InventoryItemGroupClient {
 	static final String INVENTORY_ITEM_GROUP_RESOURCE = "https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item_group";
 	static final String AUTHORIZATION_HEADER = "Authorization";
 	static final String OAUTH_USER_TOKEN_PREFIX = "Bearer ";
-	static final String LIMIT_QUERY_PARAMETER = "limit";
-	static final String OFFSET_QUERY_PARAMETER = "offset";
 
 	private static final String UTF_8_ENCODING = "utf-8";
 	private static final Variant ENTITY_VARIANT = new Variant(

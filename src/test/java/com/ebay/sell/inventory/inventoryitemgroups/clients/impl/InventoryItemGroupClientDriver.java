@@ -13,7 +13,7 @@ import com.ebay.sell.inventory.inventoryitemgroups.clients.InventoryItemGroupCli
 import com.ebay.sell.inventory.inventoryitemgroups.clients.impl.InventoryItemGroupClientImpl;
 import com.ebay.sell.inventory.inventoryitemgroups.models.InventoryItemGroup;
 
-public class InventoryItemGroupDriver {
+public class InventoryItemGroupClientDriver {
 
 	private final Client REST_CLIENT = ClientBuilder.newClient()
 			.property(ClientProperties.CONNECT_TIMEOUT, 60000)
