@@ -38,7 +38,8 @@ public class InventoryItemClientImplTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		inventoryItemClient = new InventoryItemClientImpl(client, SOME_OAUTH_USER_TOKEN);
+		inventoryItemClient = new InventoryItemClientImpl(client,
+				SOME_OAUTH_USER_TOKEN);
 	}
 
 	@Test
@@ -210,8 +211,9 @@ public class InventoryItemClientImplTest {
 		when(client.target(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE))
 				.thenReturn(webTarget);
 		when(
-				webTarget.queryParam(InventoryItemClientImpl.LIMIT_QUERY_PARAMETER,
-						limit)).thenReturn(webTarget);
+				webTarget.queryParam(
+						InventoryItemClientImpl.LIMIT_QUERY_PARAMETER, limit))
+				.thenReturn(webTarget);
 		when(
 				webTarget.queryParam(
 						InventoryItemClientImpl.OFFSET_QUERY_PARAMETER, offset))
@@ -246,8 +248,9 @@ public class InventoryItemClientImplTest {
 		when(client.target(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE))
 				.thenReturn(webTarget);
 		when(
-				webTarget.queryParam(InventoryItemClientImpl.LIMIT_QUERY_PARAMETER,
-						limit)).thenReturn(webTarget);
+				webTarget.queryParam(
+						InventoryItemClientImpl.LIMIT_QUERY_PARAMETER, limit))
+				.thenReturn(webTarget);
 		when(
 				webTarget.queryParam(
 						InventoryItemClientImpl.OFFSET_QUERY_PARAMETER, offset))
@@ -267,5 +270,4 @@ public class InventoryItemClientImplTest {
 
 		inventoryItemClient.getInventoryItems(offset, limit);
 	}
-
 }

@@ -1,12 +1,14 @@
 package com.ebay.sell.inventoryitemgroups.clients.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -100,4 +102,113 @@ public class InventoryItemGroupClientImplTest {
 				.getInventoryItemGroup(SOME_INVENTORY_ITEM_GROUP_KEY);
 	}
 
+	@Test
+	public void givenSomeInventoryItemWhenUpdatingInventoryItemGroupThenReturn204StatusCode() {
+		final InventoryItemGroup inventoryItemGroup = new InventoryItemGroup();
+		inventoryItemGroup
+				.setInventoryItemGroupKey(SOME_INVENTORY_ITEM_GROUP_KEY);
+		final Status expectedStatus = Status.NO_CONTENT;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(
+				client.target(InventoryItemGroupClientImpl.INVENTORY_ITEM_GROUP_RESOURCE))
+				.thenReturn(webTarget);
+		when(webTarget.path(SOME_INVENTORY_ITEM_GROUP_KEY)).thenReturn(
+				webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(InventoryItemGroupClientImpl.AUTHORIZATION_HEADER),
+						anyString())).thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(invocationBuilder.put(any(Entity.class))).thenReturn(response);
+
+		inventoryItemGroupClient.updateInventoryItemGroup(inventoryItemGroup);
+	}
+
+	@Test(expected = EbayErrorException.class)
+	public void givenSomeInventoryItemWithInvalidAuthorizationWhenUpdatingInventoryItemGroupThenThrowNewEbayErrorExceptionWith401StatusCodeAndSomeEbayErrorMessage() {
+		final InventoryItemGroup inventoryItemGroup = new InventoryItemGroup();
+		inventoryItemGroup
+				.setInventoryItemGroupKey(SOME_INVENTORY_ITEM_GROUP_KEY);
+		final Status expectedStatus = Status.BAD_REQUEST;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(
+				client.target(InventoryItemGroupClientImpl.INVENTORY_ITEM_GROUP_RESOURCE))
+				.thenReturn(webTarget);
+		when(client.target(InventoryItemGroupClientImpl.AUTHORIZATION_HEADER))
+				.thenReturn(webTarget);
+		when(webTarget.path(SOME_INVENTORY_ITEM_GROUP_KEY)).thenReturn(
+				webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(InventoryItemGroupClientImpl.AUTHORIZATION_HEADER),
+						anyString())).thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(response.readEntity(String.class)).thenReturn(
+				SOME_EBAY_ERROR_MESSAGE);
+		when(invocationBuilder.put(any(Entity.class))).thenReturn(response);
+
+		inventoryItemGroupClient.updateInventoryItemGroup(inventoryItemGroup);
+	}
+
+	@Test
+	public void givenSomeValidInventoryItemGroupKeyWhenDeletingInventoryItemGroupThenReturn204StatusCode() {
+		final Status expectedStatus = Status.NO_CONTENT;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(
+				client.target(InventoryItemGroupClientImpl.INVENTORY_ITEM_GROUP_RESOURCE))
+				.thenReturn(webTarget);
+		when(webTarget.path(SOME_INVENTORY_ITEM_GROUP_KEY)).thenReturn(
+				webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(InventoryItemGroupClientImpl.AUTHORIZATION_HEADER),
+						anyString())).thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		when(invocationBuilder.delete()).thenReturn(response);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+
+		inventoryItemGroupClient
+				.deleteInventoryItemGroup(SOME_INVENTORY_ITEM_GROUP_KEY);
+	}
+
+	@Test(expected = EbayErrorException.class)
+	public void givenSomeInvalidInventoryItemGroupKeyWhenDeletingInventoryItemGroupThenThrowNewEbayErrorExceptionWith404StatusCodeAndSomeEbayErrorMessage() {
+		final Status expectedStatus = Status.NOT_FOUND;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(
+				client.target(InventoryItemGroupClientImpl.INVENTORY_ITEM_GROUP_RESOURCE))
+				.thenReturn(webTarget);
+		when(webTarget.path(SOME_INVENTORY_ITEM_GROUP_KEY)).thenReturn(
+				webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(InventoryItemGroupClientImpl.AUTHORIZATION_HEADER),
+						anyString())).thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(response.readEntity(String.class)).thenReturn(
+				SOME_EBAY_ERROR_MESSAGE);
+		when(invocationBuilder.delete()).thenReturn(response);
+
+		inventoryItemGroupClient
+				.deleteInventoryItemGroup(SOME_INVENTORY_ITEM_GROUP_KEY);
+	}
 }

@@ -1,10 +1,13 @@
 package com.ebay.sell.inventoryitems.clients.impl;
 
+import java.util.Locale;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Variant;
 
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.sell.inventoryitems.clients.InventoryItemClient;
@@ -19,10 +22,15 @@ public class InventoryItemClientImpl implements InventoryItemClient {
 	static final String LIMIT_QUERY_PARAMETER = "limit";
 	static final String OFFSET_QUERY_PARAMETER = "offset";
 
+	private static final String UTF_8_ENCODING = "utf-8";
+	private static final Variant ENTITY_VARIANT = new Variant(
+			MediaType.APPLICATION_JSON_TYPE, Locale.US, UTF_8_ENCODING);
+
 	private final Client client;
 	private final String oauthUserToken;
 
-	public InventoryItemClientImpl(final Client client, final String oauthUserToken) {
+	public InventoryItemClientImpl(final Client client,
+			final String oauthUserToken) {
 		this.client = client;
 		this.oauthUserToken = new StringBuilder()
 				.append(OAUTH_USER_TOKEN_PREFIX).append(oauthUserToken)
@@ -43,7 +51,7 @@ public class InventoryItemClientImpl implements InventoryItemClient {
 	@Override
 	public void updateInventoryItem(final InventoryItem inventoryItem) {
 		final Entity<InventoryItem> inventoryItemEntity = Entity.entity(
-				inventoryItem, MediaType.APPLICATION_JSON);
+				inventoryItem, ENTITY_VARIANT);
 		final Response response = client.target(INVENTORY_ITEM_RESOURCE)
 				.path(inventoryItem.getSku()).request()
 				.header(AUTHORIZATION_HEADER, oauthUserToken)
