@@ -10,4 +10,6 @@ public interface OfferClient {
 
 	public void updateOffer(final Offer offer);
 
+	public Offer getOfferBySku(final String sku);
+
 }

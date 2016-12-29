@@ -12,12 +12,14 @@ import javax.ws.rs.core.Variant;
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.sell.inventory.offers.clients.OfferClient;
 import com.ebay.sell.inventory.offers.models.Offer;
+import com.ebay.sell.inventory.offers.models.Offers;
 
 public class OfferClientImpl implements OfferClient {
 
 	static final String OFFER_RESOURCE = "https://api.sandbox.ebay.com/sell/inventory/v1/offer";
 	static final String AUTHORIZATION_HEADER = "Authorization";
 	static final String OAUTH_USER_TOKEN_PREFIX = "Bearer ";
+	static final String SKU_QUERY_PARAMETER = "sku";
 
 	private static final String UTF_8_ENCODING = "utf-8";
 	private static final Variant ENTITY_VARIANT = new Variant(
@@ -41,6 +43,8 @@ public class OfferClientImpl implements OfferClient {
 			final Offer offer = response.readEntity(Offer.class);
 			offer.setOfferId(offerId);
 			return offer;
+		} else if (Status.NOT_FOUND.getStatusCode() == response.getStatus()) {
+			return null;
 		}
 		throw new EbayErrorException(response);
 	}
@@ -66,5 +70,19 @@ public class OfferClientImpl implements OfferClient {
 		}
 		final Offer createdOffer = response.readEntity(Offer.class);
 		offer.setOfferId(createdOffer.getOfferId());
+	}
+
+	@Override
+	public Offer getOfferBySku(final String sku) {
+		final Response response = client.target(OFFER_RESOURCE)
+				.queryParam(SKU_QUERY_PARAMETER, sku).request()
+				.header(AUTHORIZATION_HEADER, oauthUserToken).get();
+		if (Status.OK.getStatusCode() == response.getStatus()) {
+			final Offers offers = response.readEntity(Offers.class);
+			return offers.getOffers().stream().findFirst().get();
+		} else if (Status.NOT_FOUND.getStatusCode() == response.getStatus()) {
+			return null;
+		}
+		throw new EbayErrorException(response);
 	}
 }

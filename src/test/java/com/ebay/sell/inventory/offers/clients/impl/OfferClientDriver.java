@@ -45,6 +45,7 @@ public class OfferClientDriver {
 	}
 
 	@Test
+	@Ignore
 	public void givenSomeOfferWhenCreatingOfferThenReturn201StatusCode()
 			throws Exception {
 		final String offerId = "5006154010";
@@ -54,5 +55,13 @@ public class OfferClientDriver {
 		offer.setListingDescription("testing another create");
 		offerClient.createOffer(offer);
 		assertNotNull(offer.getOfferId());
+	}
+
+	@Test
+	public void givenSomeSkuWhenRetrievingOfferThenReturnOffer()
+			throws Exception {
+		final String sku = "540002";
+		final Offer actualOffer = offerClient.getOfferBySku(sku);
+		assertEquals("5006155010", actualOffer.getOfferId());
 	}
 }
