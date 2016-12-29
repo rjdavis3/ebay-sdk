@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.sell.inventory.offers.clients.OfferClient;
+import com.ebay.sell.inventory.offers.models.Listing;
 import com.ebay.sell.inventory.offers.models.Offer;
 import com.ebay.sell.inventory.offers.models.Offers;
 
@@ -32,6 +33,7 @@ public class OfferClientImplTest {
 	private static final String SOME_OAUTH_USER_TOKEN = "v1-ebay-oauth-token";
 	private static final String OFFER_ID = "5005317010";
 	private static final String SOME_SKU = "540007";
+	private static final String SOME_LISTING_ID = "223412345678";
 	private static final String SOME_EBAY_ERROR_MESSAGE = "{\r\n  \"errors\": [\r\n    {\r\n      \"errorId\": 25710,\r\n      \"domain\": \"API_INVENTORY\",\r\n      \"subdomain\": \"Selling\",\r\n      \"category\": \"REQUEST\",\r\n      \"message\": \"We didn't find the entity you are requesting. Please verify the request\"\r\n    }\r\n  ]\r\n}";
 
 	private OfferClient offerClient;
@@ -312,5 +314,58 @@ public class OfferClientImplTest {
 		when(invocationBuilder.get()).thenReturn(response);
 
 		offerClient.getOfferBySku(SOME_SKU);
+	}
+
+	@Test
+	public void givenSomeValidOfferIdWhenPublishingOfferThenReturnListingId() {
+		final Status expectedStatus = Status.OK;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(client.target(OfferClientImpl.OFFER_RESOURCE)).thenReturn(
+				webTarget);
+		when(webTarget.path(OFFER_ID)).thenReturn(webTarget);
+		when(webTarget.path(OfferClientImpl.PUBLISH_SUBRESOURCE)).thenReturn(
+				webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(OfferClientImpl.AUTHORIZATION_HEADER), anyString()))
+				.thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		final Listing listing = new Listing();
+		listing.setListingId(SOME_LISTING_ID);
+		when(response.readEntity(Listing.class)).thenReturn(listing);
+		when(invocationBuilder.get()).thenReturn(response);
+
+		final String actualListingId = offerClient.publishOffer(OFFER_ID);
+
+		assertEquals(SOME_LISTING_ID, actualListingId);
+	}
+
+	@Test(expected = EbayErrorException.class)
+	public void givenSomeInvalidOfferIdWhenPublishingOfferThenThrowNewEbayErrorException() {
+		final Status expectedStatus = Status.NOT_FOUND;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(client.target(OfferClientImpl.OFFER_RESOURCE)).thenReturn(
+				webTarget);
+		when(webTarget.path(OFFER_ID)).thenReturn(webTarget);
+		when(webTarget.path(OfferClientImpl.PUBLISH_SUBRESOURCE)).thenReturn(
+				webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(OfferClientImpl.AUTHORIZATION_HEADER), anyString()))
+				.thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(invocationBuilder.get()).thenReturn(response);
+
+		offerClient.publishOffer(OFFER_ID);
 	}
 }

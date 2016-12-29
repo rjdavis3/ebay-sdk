@@ -12,4 +12,6 @@ public interface OfferClient {
 
 	public Offer getOfferBySku(final String sku);
 
+	public String publishOffer(final String offerId);
+
 }

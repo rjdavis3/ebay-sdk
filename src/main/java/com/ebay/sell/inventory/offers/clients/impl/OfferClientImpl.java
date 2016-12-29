@@ -11,6 +11,7 @@ import javax.ws.rs.core.Variant;
 
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.sell.inventory.offers.clients.OfferClient;
+import com.ebay.sell.inventory.offers.models.Listing;
 import com.ebay.sell.inventory.offers.models.Offer;
 import com.ebay.sell.inventory.offers.models.Offers;
 
@@ -20,6 +21,7 @@ public class OfferClientImpl implements OfferClient {
 	static final String AUTHORIZATION_HEADER = "Authorization";
 	static final String OAUTH_USER_TOKEN_PREFIX = "Bearer ";
 	static final String SKU_QUERY_PARAMETER = "sku";
+	static final String PUBLISH_SUBRESOURCE = "publish";
 
 	private static final String UTF_8_ENCODING = "utf-8";
 	private static final Variant ENTITY_VARIANT = new Variant(
@@ -82,6 +84,18 @@ public class OfferClientImpl implements OfferClient {
 			return offers.getOffers().stream().findFirst().get();
 		} else if (Status.NOT_FOUND.getStatusCode() == response.getStatus()) {
 			return null;
+		}
+		throw new EbayErrorException(response);
+	}
+
+	@Override
+	public String publishOffer(final String offerId) {
+		final Response response = client.target(OFFER_RESOURCE).path(offerId)
+				.path(PUBLISH_SUBRESOURCE).request()
+				.header(AUTHORIZATION_HEADER, oauthUserToken).get();
+		if (Status.OK.getStatusCode() == response.getStatus()) {
+			final Listing listing = response.readEntity(Listing.class);
+			return listing.getListingId();
 		}
 		throw new EbayErrorException(response);
 	}

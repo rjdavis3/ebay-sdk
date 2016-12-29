@@ -58,10 +58,19 @@ public class OfferClientDriver {
 	}
 
 	@Test
+	@Ignore
 	public void givenSomeSkuWhenRetrievingOfferThenReturnOffer()
 			throws Exception {
 		final String sku = "540002";
 		final Offer actualOffer = offerClient.getOfferBySku(sku);
 		assertEquals("5006155010", actualOffer.getOfferId());
+	}
+
+	@Test
+	public void givenSomeOfferIdWhenPublishingOfferThenReturnListingId()
+			throws Exception {
+		final String offerId = "5006155010";
+		final String actualListingId = offerClient.publishOffer(offerId);
+		assertNotNull(actualListingId);
 	}
 }
