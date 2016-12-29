@@ -55,4 +55,16 @@ public class OfferClientImpl implements OfferClient {
 			throw new EbayErrorException(response);
 		}
 	}
+
+	@Override
+	public void createOffer(final Offer offer) {
+		final Entity<Offer> offerEntity = Entity.entity(offer, ENTITY_VARIANT);
+		final Response response = client.target(OFFER_RESOURCE).request()
+				.header(AUTHORIZATION_HEADER, oauthUserToken).post(offerEntity);
+		if (Status.CREATED.getStatusCode() != response.getStatus()) {
+			throw new EbayErrorException(response);
+		}
+		final Offer createdOffer = response.readEntity(Offer.class);
+		offer.setOfferId(createdOffer.getOfferId());
+	}
 }

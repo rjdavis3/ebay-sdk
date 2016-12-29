@@ -1,6 +1,7 @@
 package com.ebay.sell.inventory.offers.clients.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -34,11 +35,24 @@ public class OfferClientDriver {
 	}
 
 	@Test
+	@Ignore
 	public void givenSomeOfferWhenUpdatingOfferThenReturn204StatusCode()
 			throws Exception {
 		final String offerId = "5005317010";
 		final Offer offer = offerClient.getOffer(offerId);
 		offer.setListingDescription("did this update?");
 		offerClient.updateOffer(offer);
+	}
+
+	@Test
+	public void givenSomeOfferWhenCreatingOfferThenReturn201StatusCode()
+			throws Exception {
+		final String offerId = "5006154010";
+		final Offer offer = offerClient.getOffer(offerId);
+		offer.setOfferId(null);
+		offer.setSku("540003");
+		offer.setListingDescription("testing another create");
+		offerClient.createOffer(offer);
+		assertNotNull(offer.getOfferId());
 	}
 }

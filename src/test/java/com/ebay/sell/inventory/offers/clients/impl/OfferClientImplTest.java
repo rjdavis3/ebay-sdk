@@ -145,4 +145,59 @@ public class OfferClientImplTest {
 		offerClient.updateOffer(offer);
 	}
 
+	@Test
+	public void givenSomeOfferWhenCreatingOfferThenReturn201StatusCodeAndOfferId() {
+		final Offer offer = new Offer();
+		offer.setOfferId(null);
+		offer.setSku(SOME_SKU);
+		final Status expectedStatus = Status.CREATED;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(client.target(OfferClientImpl.OFFER_RESOURCE)).thenReturn(
+				webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(OfferClientImpl.AUTHORIZATION_HEADER), anyString()))
+				.thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		final Offer createdOffer = new Offer();
+		createdOffer.setOfferId(OFFER_ID);
+		when(response.readEntity(Offer.class)).thenReturn(createdOffer);
+		when(invocationBuilder.post(any(Entity.class))).thenReturn(response);
+
+		offerClient.createOffer(offer);
+
+		assertEquals(OFFER_ID, offer.getOfferId());
+		assertEquals(SOME_SKU, offer.getSku());
+	}
+
+	@Test(expected = EbayErrorException.class)
+	public void givenSomeAlreadyExistingOfferWhenCreatingOfferThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
+		final Offer offer = new Offer();
+		offer.setOfferId(OFFER_ID);
+		offer.setSku(SOME_SKU);
+		final Status expectedStatus = Status.BAD_REQUEST;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(client.target(OfferClientImpl.OFFER_RESOURCE)).thenReturn(
+				webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(OfferClientImpl.AUTHORIZATION_HEADER), anyString()))
+				.thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(response.readEntity(String.class)).thenReturn(
+				SOME_EBAY_ERROR_MESSAGE);
+		when(invocationBuilder.post(any(Entity.class))).thenReturn(response);
+
+		offerClient.createOffer(offer);
+	}
 }
