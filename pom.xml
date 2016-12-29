@@ -54,7 +54,7 @@
 							<goal>mutationCoverage</goal>
 						</goals>
 						<configuration>
-							<mutationThreshold>22</mutationThreshold>
+							<mutationThreshold>24</mutationThreshold>
 							<targetClasses>
 								<param>com.ebay.*</param>
 							</targetClasses>

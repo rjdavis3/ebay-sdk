@@ -6,6 +6,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.glassfish.jersey.client.ClientProperties;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ebay.sell.inventory.offers.clients.OfferClient;
@@ -23,11 +24,21 @@ public class OfferClientDriver {
 			OAUTH_USER_TOKEN);
 
 	@Test
+	@Ignore
 	public void givenSomeInventoryItemGroupKeyWhenRetrievingInventoryItemGroupThenReturnInventoryItemGroup()
 			throws Exception {
 		final String offerId = "5005317010";
 		final Offer actualOffer = offerClient.getOffer(offerId);
 		assertEquals(offerId, actualOffer.getOfferId());
 		assertEquals("540007", actualOffer.getSku());
+	}
+
+	@Test
+	public void givenSomeOfferWhenUpdatingOfferThenReturn204StatusCode()
+			throws Exception {
+		final String offerId = "5005317010";
+		final Offer offer = offerClient.getOffer(offerId);
+		offer.setListingDescription("did this update?");
+		offerClient.updateOffer(offer);
 	}
 }

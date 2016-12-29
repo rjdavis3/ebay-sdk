@@ -9,7 +9,12 @@ public class EbayErrorException extends RuntimeException {
 	private static final long serialVersionUID = 4291284903448380314L;
 
 	public EbayErrorException(final Response response) {
-		super(String.format(MESSAGE, response.getStatus(),
-				response.readEntity(String.class)));
+		super(buildMessage(response));
+	}
+
+	private static String buildMessage(final Response response) {
+		response.bufferEntity();
+		return String.format(MESSAGE, response.getStatus(),
+				response.readEntity(String.class));
 	}
 }

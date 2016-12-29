@@ -6,4 +6,6 @@ public interface OfferClient {
 
 	public Offer getOffer(final String offerId);
 
+	public void updateOffer(final Offer offer);
+
 }

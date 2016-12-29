@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.sell.inventory.inventoryitems.clients.InventoryItemClient;
-import com.ebay.sell.inventory.inventoryitems.clients.impl.InventoryItemClientImpl;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItem;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItems;
 

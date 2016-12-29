@@ -1,12 +1,14 @@
 package com.ebay.sell.inventory.offers.clients.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -90,4 +92,57 @@ public class OfferClientImplTest {
 
 		offerClient.getOffer(OFFER_ID);
 	}
+
+	@Test
+	public void givenSomeOfferWhenUpdatingOfferThenReturn204StatusCode() {
+		final Offer offer = new Offer();
+		offer.setOfferId(OFFER_ID);
+		offer.setSku(SOME_SKU);
+		final Status expectedStatus = Status.NO_CONTENT;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(client.target(OfferClientImpl.OFFER_RESOURCE)).thenReturn(
+				webTarget);
+		when(webTarget.path(OFFER_ID)).thenReturn(webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(OfferClientImpl.AUTHORIZATION_HEADER), anyString()))
+				.thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(invocationBuilder.put(any(Entity.class))).thenReturn(response);
+
+		offerClient.updateOffer(offer);
+	}
+
+	@Test(expected = EbayErrorException.class)
+	public void givenSomeOfferWithInvalidMarketPlaceIdWhenUpdatingOfferThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
+		final Offer offer = new Offer();
+		offer.setOfferId(OFFER_ID);
+		offer.setSku(SOME_SKU);
+		final Status expectedStatus = Status.BAD_REQUEST;
+
+		final WebTarget webTarget = mock(WebTarget.class);
+		when(client.target(OfferClientImpl.OFFER_RESOURCE)).thenReturn(
+				webTarget);
+		when(webTarget.path(OFFER_ID)).thenReturn(webTarget);
+		final Invocation.Builder invocationBuilder = mock(Invocation.Builder.class);
+		when(webTarget.request()).thenReturn(invocationBuilder);
+		when(
+				invocationBuilder.header(
+						eq(OfferClientImpl.AUTHORIZATION_HEADER), anyString()))
+				.thenReturn(invocationBuilder);
+		final Response response = mock(Response.class);
+		final int statusCode = expectedStatus.getStatusCode();
+		when(response.getStatus()).thenReturn(statusCode);
+		when(response.readEntity(String.class)).thenReturn(
+				SOME_EBAY_ERROR_MESSAGE);
+		when(invocationBuilder.put(any(Entity.class))).thenReturn(response);
+
+		offerClient.updateOffer(offer);
+	}
+
 }
