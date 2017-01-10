@@ -61,6 +61,9 @@
 							<targetTests>
 								<param>com.ebay.*Test</param>
 							</targetTests>
+							<excludedClasses>
+								<param>com.ebay.EbaySdk</param>
+							</excludedClasses>
 							<outputFormats>
 								<outputFormat>HTML</outputFormat>
 								<outputFormat>XML</outputFormat>
