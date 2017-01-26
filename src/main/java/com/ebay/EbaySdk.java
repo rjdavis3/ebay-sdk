@@ -16,22 +16,18 @@ import com.ebay.sell.inventory.offers.clients.OfferClient;
 import com.ebay.sell.inventory.offers.clients.impl.OfferClientImpl;
 import com.ebay.sell.inventory.offers.models.Offer;
 
-public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient,
-		OfferClient {
+public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, OfferClient {
 
-	private final Client REST_CLIENT = ClientBuilder.newClient()
-			.property(ClientProperties.CONNECT_TIMEOUT, 60000)
-			.property(ClientProperties.READ_TIMEOUT, 600000);
+	private static final Client REST_CLIENT = ClientBuilder.newClient()
+			.property(ClientProperties.CONNECT_TIMEOUT, 60000).property(ClientProperties.READ_TIMEOUT, 600000);
 
 	private final InventoryItemClient inventoryItemClient;
 	private final InventoryItemGroupClient inventoryItemGroupClient;
 	private final OfferClient offerClient;
 
 	public EbaySdk(final String oauthUserToken) {
-		inventoryItemClient = new InventoryItemClientImpl(REST_CLIENT,
-				oauthUserToken);
-		inventoryItemGroupClient = new InventoryItemGroupClientImpl(
-				REST_CLIENT, oauthUserToken);
+		inventoryItemClient = new InventoryItemClientImpl(REST_CLIENT, oauthUserToken);
+		inventoryItemGroupClient = new InventoryItemGroupClientImpl(REST_CLIENT, oauthUserToken);
 		offerClient = new OfferClientImpl(REST_CLIENT, oauthUserToken);
 	}
 
@@ -81,21 +77,17 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient,
 	}
 
 	@Override
-	public InventoryItemGroup getInventoryItemGroup(
-			final String inventoryItemGroupKey) {
-		return inventoryItemGroupClient
-				.getInventoryItemGroup(inventoryItemGroupKey);
+	public InventoryItemGroup getInventoryItemGroup(final String inventoryItemGroupKey) {
+		return inventoryItemGroupClient.getInventoryItemGroup(inventoryItemGroupKey);
 	}
 
 	@Override
 	public void deleteInventoryItemGroup(final String inventoryItemGroupKey) {
-		inventoryItemGroupClient
-				.deleteInventoryItemGroup(inventoryItemGroupKey);
+		inventoryItemGroupClient.deleteInventoryItemGroup(inventoryItemGroupKey);
 	}
 
 	@Override
-	public void updateInventoryItemGroup(
-			final InventoryItemGroup inventoryItemGroup) {
+	public void updateInventoryItemGroup(final InventoryItemGroup inventoryItemGroup) {
 		inventoryItemGroupClient.updateInventoryItemGroup(inventoryItemGroup);
 	}
 
