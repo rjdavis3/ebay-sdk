@@ -39,6 +39,12 @@
 			<version>1.10.19</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.rest-driver</groupId>
+			<artifactId>rest-client-driver</artifactId>
+			<version>2.0.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -54,7 +60,7 @@
 							<goal>mutationCoverage</goal>
 						</goals>
 						<configuration>
-							<mutationThreshold>32</mutationThreshold>
+							<mutationThreshold>30</mutationThreshold>
 							<targetClasses>
 								<param>com.ebay.*</param>
 							</targetClasses>
