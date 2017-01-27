@@ -2,6 +2,9 @@ package com.ebay;
 
 import java.net.URI;
 
+import com.ebay.identity.oauth2.token.clients.TokenClient;
+import com.ebay.identity.oauth2.token.models.Token;
+import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
 import com.ebay.sell.inventory.inventoryitemgroups.clients.InventoryItemGroupClient;
 import com.ebay.sell.inventory.inventoryitemgroups.clients.impl.InventoryItemGroupClientImpl;
 import com.ebay.sell.inventory.inventoryitemgroups.models.InventoryItemGroup;
@@ -18,12 +21,22 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	public static final URI SANDBOX_URI = URI.create("https://api.sandbox.ebay.com");
 	public static final URI PRODUCTION_URI = URI.create("https://api.ebay.com");
 
+	private final TokenClient tokenClient;
 	private final InventoryItemClient inventoryItemClient;
 	private final InventoryItemGroupClient inventoryItemGroupClient;
 	private final OfferClient offerClient;
 
-	public EbaySdk(final String oauthUserToken, final boolean sandbox) {
+	public EbaySdk(final String clientId, final String clientSecret, final String refreshToken) {
+		this(clientId, clientSecret, refreshToken, false);
+	}
+
+	public EbaySdk(final String clientId, final String clientSecret, final String refreshToken, final boolean sandbox) {
 		final URI baseUri = sandbox ? SANDBOX_URI : PRODUCTION_URI;
+		tokenClient = new TokenClientImpl(baseUri, clientId, clientSecret);
+
+		final Token token = tokenClient.refreshAccessToken(refreshToken);
+		final String oauthUserToken = token.getAccessToken();
+
 		inventoryItemClient = new InventoryItemClientImpl(baseUri, oauthUserToken);
 		inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, oauthUserToken);
 		offerClient = new OfferClientImpl(baseUri, oauthUserToken);
