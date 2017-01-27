@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.ebay.exceptions.EbayErrorException;
+import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.github.restdriver.clientdriver.ClientDriverRequest.Method;
 import com.github.restdriver.clientdriver.ClientDriverRule;
@@ -33,7 +34,7 @@ public class TokenClientImplTest {
 	private static final int SOME_REFRESH_TOKEN_EXPIRES_IN = 7200;
 	private static final String SOME_TOKEN_TYPE = "User Access Token";
 
-	private TokenClientImpl tokenClientImpl;
+	private TokenClient tokenClient;
 
 	@Rule
 	public ClientDriverRule driver = new ClientDriverRule();
@@ -41,7 +42,7 @@ public class TokenClientImplTest {
 	@Before
 	public void setUp() {
 		final URI baseUri = URI.create(driver.getBaseUrl());
-		tokenClientImpl = new TokenClientImpl(baseUri, SOME_CLIENT_ID, SOME_CLIENT_SECRET);
+		tokenClient = new TokenClientImpl(baseUri, SOME_CLIENT_ID, SOME_CLIENT_SECRET);
 	}
 
 	@Test
@@ -60,7 +61,7 @@ public class TokenClientImplTest {
 
 		mockRequest(expectedRequestBody, expectedResponseStatus, expectedResponseBody);
 
-		final Token actualToken = tokenClientImpl.getAccessToken(ruName, code);
+		final Token actualToken = tokenClient.getAccessToken(ruName, code);
 
 		assertExpectedToken(actualToken);
 	}
@@ -81,7 +82,7 @@ public class TokenClientImplTest {
 
 		mockRequest(expectedRequestBody, expectedResponseStatus, expectedResponseBody);
 
-		tokenClientImpl.getAccessToken(ruName, code);
+		tokenClient.getAccessToken(ruName, code);
 	}
 
 	@Test
@@ -97,7 +98,7 @@ public class TokenClientImplTest {
 
 		mockRequest(expectedRequestBody, expectedResponseStatus, expectedResponseBody);
 
-		final Token actualToken = tokenClientImpl.refreshAccessToken(refreshToken);
+		final Token actualToken = tokenClient.refreshAccessToken(refreshToken);
 
 		assertExpectedToken(actualToken);
 	}
@@ -115,7 +116,7 @@ public class TokenClientImplTest {
 
 		mockRequest(expectedRequestBody, expectedResponseStatus, expectedResponseBody);
 
-		tokenClientImpl.refreshAccessToken(refreshToken);
+		tokenClient.refreshAccessToken(refreshToken);
 	}
 
 	private String buildValidTokenResponseBody() {

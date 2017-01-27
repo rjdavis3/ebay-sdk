@@ -1,9 +1,6 @@
 package com.ebay;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-
-import org.glassfish.jersey.client.ClientProperties;
+import java.net.URI;
 
 import com.ebay.sell.inventory.inventoryitemgroups.clients.InventoryItemGroupClient;
 import com.ebay.sell.inventory.inventoryitemgroups.clients.impl.InventoryItemGroupClientImpl;
@@ -18,17 +15,18 @@ import com.ebay.sell.inventory.offers.models.Offer;
 
 public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, OfferClient {
 
-	private static final Client REST_CLIENT = ClientBuilder.newClient()
-			.property(ClientProperties.CONNECT_TIMEOUT, 60000).property(ClientProperties.READ_TIMEOUT, 600000);
+	public static final URI SANDBOX_URI = URI.create("https://api.sandbox.ebay.com");
+	public static final URI PRODUCTION_URI = URI.create("https://api.ebay.com");
 
 	private final InventoryItemClient inventoryItemClient;
 	private final InventoryItemGroupClient inventoryItemGroupClient;
 	private final OfferClient offerClient;
 
-	public EbaySdk(final String oauthUserToken) {
-		inventoryItemClient = new InventoryItemClientImpl(REST_CLIENT, oauthUserToken);
-		inventoryItemGroupClient = new InventoryItemGroupClientImpl(REST_CLIENT, oauthUserToken);
-		offerClient = new OfferClientImpl(REST_CLIENT, oauthUserToken);
+	public EbaySdk(final String oauthUserToken, final boolean sandbox) {
+		final URI baseUri = sandbox ? SANDBOX_URI : PRODUCTION_URI;
+		inventoryItemClient = new InventoryItemClientImpl(baseUri, oauthUserToken);
+		inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, oauthUserToken);
+		offerClient = new OfferClientImpl(baseUri, oauthUserToken);
 	}
 
 	@Override

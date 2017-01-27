@@ -51,6 +51,12 @@
 			<version>20160810</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.22</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -66,7 +72,7 @@
 							<goal>mutationCoverage</goal>
 						</goals>
 						<configuration>
-							<mutationThreshold>38</mutationThreshold>
+							<mutationThreshold>55</mutationThreshold>
 							<targetClasses>
 								<param>com.ebay.*</param>
 							</targetClasses>
