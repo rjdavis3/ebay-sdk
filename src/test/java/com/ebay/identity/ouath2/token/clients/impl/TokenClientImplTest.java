@@ -1,20 +1,38 @@
 package com.ebay.identity.ouath2.token.clients.impl;
 
-import static org.junit.Assert.assertNotNull;
+import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
+import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
+import static org.junit.Assert.assertEquals;
 
+import java.net.URI;
+import java.util.UUID;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.JAXBException;
+
+import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 
+import com.ebay.exceptions.EbayErrorException;
 import com.ebay.identity.oauth2.token.models.Token;
+import com.github.restdriver.clientdriver.ClientDriverRequest.Method;
 import com.github.restdriver.clientdriver.ClientDriverRule;
 
 public class TokenClientImplTest {
 
-	@InjectMocks
+	private static final char EQUAL = '=';
+	private static final char AMPERSAND = '&';
+	private static final String SOME_CLIENT_ID = UUID.randomUUID().toString();
+	private static final String SOME_CLIENT_SECRET = UUID.randomUUID().toString();
+	private static final String SOME_ACCESS_TOKEN = UUID.randomUUID().toString();
+	private static final int SOME_EXPIRES_IN = 7200;
+	private static final String SOME_REFRESH_TOKEN = UUID.randomUUID().toString();
+	private static final int SOME_REFRESH_TOKEN_EXPIRES_IN = 7200;
+	private static final String SOME_TOKEN_TYPE = "User Access Token";
+
 	private TokenClientImpl tokenClientImpl;
 
 	@Rule
@@ -22,27 +40,109 @@ public class TokenClientImplTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		final URI baseUri = URI.create(driver.getBaseUrl());
+		tokenClientImpl = new TokenClientImpl(baseUri, SOME_CLIENT_ID, SOME_CLIENT_SECRET);
 	}
 
 	@Test
-	@Ignore
-	public void givenValidRuNameAndValidAuthorizationCodeWhenGeneratingAccessTokenThenReturnToken() {
+	public void givenValidRuNameAndValidAuthorizationCodeWhenGeneratingAccessTokenThenReturnToken()
+			throws JAXBException {
 		final String ruName = "some-RuName";
 		final String code = "some-authorization-code";
+
+		final String expectedRequestBody = new StringBuilder().append(TokenClientImpl.GRANT_TYPE).append(EQUAL)
+				.append(TokenClientImpl.AUTHORIZATION_CODE).append(AMPERSAND).append(TokenClientImpl.CODE).append(EQUAL)
+				.append(code).append(AMPERSAND).append(TokenClientImpl.REDIRECT_URI).append(EQUAL).append(ruName)
+				.toString();
+
+		final Status expectedResponseStatus = Status.OK;
+		final String expectedResponseBody = buildValidTokenResponseBody();
+
+		mockRequest(expectedRequestBody, expectedResponseStatus, expectedResponseBody);
+
 		final Token actualToken = tokenClientImpl.getAccessToken(ruName, code);
 
-		assertNotNull(actualToken.getAccessToken());
-		assertNotNull(actualToken.getRefreshToken());
+		assertExpectedToken(actualToken);
+	}
+
+	@Test(expected = EbayErrorException.class)
+	public void givenValidRuNameAndInvvalidAuthorizationCodeWhenGeneratingAccessTokenThenThrowNewEbayErrorException()
+			throws JAXBException {
+		final String ruName = "some-RuName";
+		final String code = "some-authorization-code";
+
+		final String expectedRequestBody = new StringBuilder().append(TokenClientImpl.GRANT_TYPE).append(EQUAL)
+				.append(TokenClientImpl.AUTHORIZATION_CODE).append(AMPERSAND).append(TokenClientImpl.CODE).append(EQUAL)
+				.append(code).append(AMPERSAND).append(TokenClientImpl.REDIRECT_URI).append(EQUAL).append(ruName)
+				.toString();
+
+		final Status expectedResponseStatus = Status.BAD_REQUEST;
+		final String expectedResponseBody = "{\"error\":\"invalid_request\",\"error_description\":\"request is invalid\",\"error_uri\":null}";
+
+		mockRequest(expectedRequestBody, expectedResponseStatus, expectedResponseBody);
+
+		tokenClientImpl.getAccessToken(ruName, code);
 	}
 
 	@Test
-	@Ignore
 	public void givenValidRefreshTokenWhenRefreshingAccessTokenThenReturnToken() {
 		final String refreshToken = "some-refresh-token";
+
+		final String expectedRequestBody = new StringBuilder().append(TokenClientImpl.GRANT_TYPE).append(EQUAL)
+				.append(TokenClientImpl.REFRESH_TOKEN).append(AMPERSAND).append(TokenClientImpl.REFRESH_TOKEN)
+				.append(EQUAL).append(refreshToken).toString();
+
+		final Status expectedResponseStatus = Status.OK;
+		final String expectedResponseBody = buildValidTokenResponseBody();
+
+		mockRequest(expectedRequestBody, expectedResponseStatus, expectedResponseBody);
+
 		final Token actualToken = tokenClientImpl.refreshAccessToken(refreshToken);
 
-		assertNotNull(actualToken.getAccessToken());
+		assertExpectedToken(actualToken);
+	}
+
+	@Test(expected = EbayErrorException.class)
+	public void givenExpiredRefreshTokenWhenRefreshingAccessTokenThenThrowNewEbayErrorException() {
+		final String refreshToken = "some-refresh-token";
+
+		final String expectedRequestBody = new StringBuilder().append(TokenClientImpl.GRANT_TYPE).append(EQUAL)
+				.append(TokenClientImpl.REFRESH_TOKEN).append(AMPERSAND).append(TokenClientImpl.REFRESH_TOKEN)
+				.append(EQUAL).append(refreshToken).toString();
+
+		final Status expectedResponseStatus = Status.BAD_REQUEST;
+		final String expectedResponseBody = "{\"error\":\"invalid_grant\",\"error_description\":\"refresh token is invalid or expired\",\"error_uri\":null}";
+
+		mockRequest(expectedRequestBody, expectedResponseStatus, expectedResponseBody);
+
+		tokenClientImpl.refreshAccessToken(refreshToken);
+	}
+
+	private String buildValidTokenResponseBody() {
+		final JSONObject jsonObject = new JSONObject();
+		jsonObject.put("access_token", SOME_ACCESS_TOKEN);
+		jsonObject.put("expires_in", SOME_EXPIRES_IN);
+		jsonObject.put("refresh_token", SOME_REFRESH_TOKEN);
+		jsonObject.put("refresh_token_expires_in", SOME_REFRESH_TOKEN_EXPIRES_IN);
+		jsonObject.put("token_type", SOME_TOKEN_TYPE);
+		return jsonObject.toString();
+	}
+
+	private void mockRequest(final String expectedRequestBody, final Status expectedResponseStatus,
+			final String expectedResponseBody) {
+		driver.addExpectation(
+				onRequestTo(TokenClientImpl.TOKEN_RESOURCE).withBasicAuth(SOME_CLIENT_ID, SOME_CLIENT_SECRET)
+						.withMethod(Method.POST).withBody(expectedRequestBody, MediaType.APPLICATION_FORM_URLENCODED),
+				giveResponse(expectedResponseBody, MediaType.APPLICATION_JSON)
+						.withStatus(expectedResponseStatus.getStatusCode()));
+	}
+
+	private void assertExpectedToken(final Token actualToken) {
+		assertEquals(SOME_ACCESS_TOKEN, actualToken.getAccessToken());
+		assertEquals(SOME_EXPIRES_IN, actualToken.getExpiresIn());
+		assertEquals(SOME_REFRESH_TOKEN, actualToken.getRefreshToken());
+		assertEquals(SOME_REFRESH_TOKEN_EXPIRES_IN, actualToken.getRefreshTokenExpiresIn());
+		assertEquals(SOME_TOKEN_TYPE, actualToken.getTokenType());
 	}
 
 }

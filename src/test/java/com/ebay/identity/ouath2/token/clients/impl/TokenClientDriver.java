@@ -2,6 +2,8 @@ package com.ebay.identity.ouath2.token.clients.impl;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.net.URI;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -10,13 +12,13 @@ import com.ebay.identity.oauth2.token.models.Token;
 
 public class TokenClientDriver {
 
+	private static final URI SANDBOX_URI = URI.create("https://api.sandbox.ebay.com");
 	private static final String CLIENT_ID = System.getenv("EBAY_CLIENT_ID");
 	private static final String CLIENT_SECRET = System.getenv("EBAY_CLIENT_SECRET");
 
-	private final TokenClient tokenClient = new TokenClientImpl(CLIENT_ID, CLIENT_SECRET);
+	private final TokenClient tokenClient = new TokenClientImpl(SANDBOX_URI, CLIENT_ID, CLIENT_SECRET);
 
 	@Test
-	@Ignore
 	public void givenValidRuNameAndValidAuthorizationCodeWhenGeneratingAccessTokenThenReturnToken() {
 		final String ruName = "some-RuName";
 		final String code = "some-authorization-code";
@@ -28,6 +30,7 @@ public class TokenClientDriver {
 	}
 
 	@Test
+	@Ignore
 	public void givenValidRefreshTokenWhenRefreshingAccessTokenThenReturnToken() {
 		final String refreshToken = "some-refresh-token";
 		final Token actualToken = tokenClient.refreshAccessToken(refreshToken);
