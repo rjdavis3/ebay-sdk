@@ -39,10 +39,8 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		userToken = new UserToken(tokenClient, refreshToken);
 
 		inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken);
-
-		final String oauthUserToken = userToken.getToken();
-		inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, oauthUserToken);
-		offerClient = new OfferClientImpl(baseUri, oauthUserToken);
+		inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken);
+		offerClient = new OfferClientImpl(baseUri, userToken);
 	}
 
 	public EbaySdk(final String clientId, final String clientSecret, final String ruName, final String code) {
@@ -57,11 +55,8 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		userToken = new UserToken(tokenClient, accessToken.getRefreshToken());
 
 		inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken);
-
-		final String oauthUserToken = userToken.getToken();
-
-		inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, oauthUserToken);
-		offerClient = new OfferClientImpl(baseUri, oauthUserToken);
+		inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken);
+		offerClient = new OfferClientImpl(baseUri, userToken);
 	}
 
 	@Override

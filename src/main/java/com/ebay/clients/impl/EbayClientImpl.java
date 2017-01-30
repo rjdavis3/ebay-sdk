@@ -39,6 +39,17 @@ public class EbayClientImpl {
 		return handleResponse(response, entityType, expectedStatus);
 	}
 
+	protected <T, V> V post(final WebTarget webTarget, final T object, final Class<V> entityType,
+			final Status... expectedStatus) {
+		final Entity<T> entity = Entity.entity(object, ENTITY_VARIANT);
+		Response response = webTarget.request().header(AUTHORIZATION_HEADER, getUserToken()).post(entity);
+		if (Status.UNAUTHORIZED.getStatusCode() == response.getStatus()) {
+			userToken.refreshToken();
+			response = webTarget.request().header(AUTHORIZATION_HEADER, getUserToken()).post(entity);
+		}
+		return handleResponse(response, entityType, expectedStatus);
+	}
+
 	protected <T> void put(final WebTarget webTarget, final T object, final Status... expectedStatus) {
 		final Entity<T> entity = Entity.entity(object, ENTITY_VARIANT);
 		Response response = webTarget.request().header(AUTHORIZATION_HEADER, getUserToken()).put(entity);
