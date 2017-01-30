@@ -14,12 +14,12 @@ import javax.ws.rs.core.Variant;
 
 import org.glassfish.jersey.client.ClientProperties;
 
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.clients.impl.EbayClientImpl;
 import com.ebay.sell.inventory.inventoryitems.clients.InventoryItemClient;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItem;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItems;
 
-public class InventoryItemClientImpl implements InventoryItemClient {
+public class InventoryItemClientImpl extends EbayClientImpl implements InventoryItemClient {
 
 	static final String INVENTORY_ITEM_RESOURCE = "/sell/inventory/v1/inventory_item";
 	static final String AUTHORIZATION_HEADER = "Authorization";
@@ -44,10 +44,7 @@ public class InventoryItemClientImpl implements InventoryItemClient {
 	@Override
 	public InventoryItem getInventoryItem(final String sku) {
 		final Response response = getWebTarget().path(sku).request().header(AUTHORIZATION_HEADER, oauthUserToken).get();
-		if (Status.OK.getStatusCode() == response.getStatus()) {
-			return response.readEntity(InventoryItem.class);
-		}
-		throw new EbayErrorException(response);
+		return handleResponse(response, InventoryItem.class, Status.OK);
 	}
 
 	@Override
@@ -55,28 +52,21 @@ public class InventoryItemClientImpl implements InventoryItemClient {
 		final Entity<InventoryItem> inventoryItemEntity = Entity.entity(inventoryItem, ENTITY_VARIANT);
 		final Response response = getWebTarget().path(inventoryItem.getSku()).request()
 				.header(AUTHORIZATION_HEADER, oauthUserToken).put(inventoryItemEntity);
-		if (Status.NO_CONTENT.getStatusCode() != response.getStatus()) {
-			throw new EbayErrorException(response);
-		}
+		handleResponse(response, Status.NO_CONTENT);
 	}
 
 	@Override
 	public void deleteInventoryItem(final String sku) {
 		final Response response = getWebTarget().path(sku).request().header(AUTHORIZATION_HEADER, oauthUserToken)
 				.delete();
-		if (Status.NO_CONTENT.getStatusCode() != response.getStatus()) {
-			throw new EbayErrorException(response);
-		}
+		handleResponse(response, Status.NO_CONTENT);
 	}
 
 	@Override
 	public InventoryItems getInventoryItems(final int offset, final int limit) {
 		final Response response = getWebTarget().queryParam(OFFSET_QUERY_PARAMETER, offset)
 				.queryParam(LIMIT_QUERY_PARAMETER, limit).request().header(AUTHORIZATION_HEADER, oauthUserToken).get();
-		if (Status.OK.getStatusCode() == response.getStatus()) {
-			return response.readEntity(InventoryItems.class);
-		}
-		throw new EbayErrorException(response);
+		return handleResponse(response, InventoryItems.class, Status.OK);
 	}
 
 	private WebTarget getWebTarget() {

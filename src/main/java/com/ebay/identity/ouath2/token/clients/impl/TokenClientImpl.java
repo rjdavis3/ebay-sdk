@@ -37,8 +37,8 @@ public class TokenClientImpl implements TokenClient {
 
 	@Override
 	public Token getAccessToken(final String ruName, final String code) {
-		final Form form = new Form().param(GRANT_TYPE, AUTHORIZATION_CODE).param(CODE, code)
-				.param(REDIRECT_URI, ruName);
+		final Form form = new Form().param(GRANT_TYPE, AUTHORIZATION_CODE).param(CODE, code).param(REDIRECT_URI,
+				ruName);
 		final Response response = postForm(form);
 		if (Status.OK.getStatusCode() == response.getStatus()) {
 			return response.readEntity(Token.class);
