@@ -2,10 +2,12 @@ package com.ebay.sell.inventory.inventoryitems.clients.impl;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
 
 import com.ebay.EbaySdk;
+import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
@@ -20,7 +22,9 @@ public class InventoryItemClientDriver {
 	private static final String REFRESH_TOKEN = System.getenv("EBAY_REFRESH_TOKEN");
 
 	private final InventoryItemClient inventoryItemClient = new InventoryItemClientImpl(EbaySdk.SANDBOX_URI,
-			new UserToken(new TokenClientImpl(EbaySdk.SANDBOX_URI, CLIENT_ID, CLIENT_SECRET), REFRESH_TOKEN));
+			new UserToken(new TokenClientImpl(EbaySdk.SANDBOX_URI, CLIENT_ID, CLIENT_SECRET), REFRESH_TOKEN),
+			RequestRetryConfiguration.newBuilder().withMininumWait(5, TimeUnit.SECONDS).withTimeout(2, TimeUnit.MINUTES)
+					.build());
 
 	@Test
 	public void givenSomeSkuWhenRetrievingInventoryItemThenReturnInventoryItem() throws Exception {
@@ -31,7 +35,6 @@ public class InventoryItemClientDriver {
 	}
 
 	@Test(expected = EbayErrorException.class)
-	@Ignore
 	public void givenSomeInvalidSkuWhenRetrievingInventoryItemThenThrowNewEbayErrorException() throws Exception {
 		inventoryItemClient.getInventoryItem("540009103184");
 	}

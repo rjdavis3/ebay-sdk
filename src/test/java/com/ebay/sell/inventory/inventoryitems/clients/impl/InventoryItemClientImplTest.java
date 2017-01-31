@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
@@ -59,7 +61,10 @@ public class InventoryItemClientImplTest {
 		when(tokenClient.refreshAccessToken(SOME_REFRESH_TOKEN)).thenReturn(token);
 
 		final UserToken userToken = new UserToken(tokenClient, SOME_REFRESH_TOKEN);
-		inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken);
+
+		final RequestRetryConfiguration requestRetryConfiguration = RequestRetryConfiguration.newBuilder()
+				.withMininumWait(100, TimeUnit.MILLISECONDS).withTimeout(300, TimeUnit.MILLISECONDS).build();
+		inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken, requestRetryConfiguration);
 	}
 
 	@Test

@@ -4,6 +4,7 @@ import java.net.URI;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.ebay.identity.oauth2.token.models.UserToken;
@@ -28,31 +29,35 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	private final InventoryItemGroupClient inventoryItemGroupClient;
 	private final OfferClient offerClient;
 
-	static interface ClientIdStep {
+	public static interface ClientIdStep {
 		ClientSecretStep withClientId(final String clientId);
 	}
 
-	static interface ClientSecretStep {
+	public static interface ClientSecretStep {
 		CredentialsStep withClientSecret(final String clientSecret);
 	}
 
-	static interface CredentialsStep {
-		SandboxStep withRefreshToken(final String refreshToken);
+	public static interface CredentialsStep {
+		RequestRetryConfigurationStep withRefreshToken(final String refreshToken);
 
 		CodeStep withRuName(final String ruName);
 	}
 
-	static interface CodeStep {
-		SandboxStep withCode(final String code);
+	public static interface CodeStep {
+		RequestRetryConfigurationStep withCode(final String code);
 	}
 
-	static interface SandboxStep {
+	public static interface RequestRetryConfigurationStep {
+		SandboxStep withRequestRetryConfiguration(final RequestRetryConfiguration requestRetryConfiguration);
+	}
+
+	public static interface SandboxStep {
 		BuildStep withSandbox(final boolean sandbox);
 
 		BuildStep withBaseUri(final URI baseUri);
 	}
 
-	static interface BuildStep {
+	public static interface BuildStep {
 		EbaySdk build();
 	}
 
@@ -126,8 +131,8 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		this.offerClient = steps.offerClient;
 	}
 
-	private static class Steps
-			implements ClientIdStep, ClientSecretStep, CredentialsStep, CodeStep, SandboxStep, BuildStep {
+	private static class Steps implements ClientIdStep, ClientSecretStep, CredentialsStep, CodeStep, SandboxStep,
+			RequestRetryConfigurationStep, BuildStep {
 
 		private InventoryItemClient inventoryItemClient;
 		private InventoryItemGroupClient inventoryItemGroupClient;
@@ -139,6 +144,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		private String refreshToken;
 		private String ruName;
 		private String code;
+		private RequestRetryConfiguration requestRetryConfiguration;
 
 		@Override
 		public EbaySdk build() {
@@ -152,9 +158,9 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 				userToken = new UserToken(tokenClient, token.getRefreshToken());
 			}
 
-			inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken);
-			inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken);
-			offerClient = new OfferClientImpl(baseUri, userToken);
+			inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken, requestRetryConfiguration);
+			inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken, requestRetryConfiguration);
+			offerClient = new OfferClientImpl(baseUri, userToken, requestRetryConfiguration);
 
 			return new EbaySdk(this);
 		}
@@ -166,13 +172,13 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		}
 
 		@Override
-		public SandboxStep withCode(final String code) {
+		public RequestRetryConfigurationStep withCode(final String code) {
 			this.code = code;
 			return this;
 		}
 
 		@Override
-		public SandboxStep withRefreshToken(final String refreshToken) {
+		public RequestRetryConfigurationStep withRefreshToken(final String refreshToken) {
 			this.refreshToken = refreshToken;
 			return this;
 		}
@@ -196,8 +202,14 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		}
 
 		@Override
-		public BuildStep withBaseUri(URI baseUri) {
+		public BuildStep withBaseUri(final URI baseUri) {
 			this.baseUri = baseUri;
+			return this;
+		}
+
+		@Override
+		public SandboxStep withRequestRetryConfiguration(final RequestRetryConfiguration requestRetryConfiguration) {
+			this.requestRetryConfiguration = requestRetryConfiguration;
 			return this;
 		}
 

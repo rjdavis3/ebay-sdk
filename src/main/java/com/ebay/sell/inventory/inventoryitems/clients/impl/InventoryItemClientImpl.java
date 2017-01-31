@@ -6,6 +6,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response.Status;
 
 import com.ebay.clients.impl.EbayClientImpl;
+import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.sell.inventory.inventoryitems.clients.InventoryItemClient;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItem;
@@ -17,8 +18,9 @@ public class InventoryItemClientImpl extends EbayClientImpl implements Inventory
 	static final String LIMIT_QUERY_PARAMETER = "limit";
 	static final String OFFSET_QUERY_PARAMETER = "offset";
 
-	public InventoryItemClientImpl(final URI baseUri, final UserToken userToken) {
-		super(baseUri, userToken);
+	public InventoryItemClientImpl(final URI baseUri, final UserToken userToken,
+			final RequestRetryConfiguration requestRetryConfiguration) {
+		super(baseUri, userToken, requestRetryConfiguration);
 	}
 
 	@Override

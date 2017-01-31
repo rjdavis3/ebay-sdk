@@ -6,6 +6,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response.Status;
 
 import com.ebay.clients.impl.EbayClientImpl;
+import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.sell.inventory.inventoryitemgroups.clients.InventoryItemGroupClient;
 import com.ebay.sell.inventory.inventoryitemgroups.models.InventoryItemGroup;
@@ -14,8 +15,9 @@ public class InventoryItemGroupClientImpl extends EbayClientImpl implements Inve
 
 	static final String INVENTORY_ITEM_GROUP_RESOURCE = "/sell/inventory/v1/inventory_item_group";
 
-	public InventoryItemGroupClientImpl(final URI baseUri, final UserToken userToken) {
-		super(baseUri, userToken);
+	public InventoryItemGroupClientImpl(final URI baseUri, final UserToken userToken,
+			final RequestRetryConfiguration requestRetryConfiguration) {
+		super(baseUri, userToken, requestRetryConfiguration);
 	}
 
 	@Override

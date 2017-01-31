@@ -32,6 +32,11 @@
 			<version>3.5</version>
 		</dependency>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.22</version>
+		</dependency>
+		<dependency>
 			<groupId>com.github.rholder</groupId>
 			<artifactId>guava-retrying</artifactId>
 			<version>2.0.0</version>
@@ -61,12 +66,6 @@
 			<version>20160810</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.22</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -82,7 +81,7 @@
 							<goal>mutationCoverage</goal>
 						</goals>
 						<configuration>
-							<mutationThreshold>55</mutationThreshold>
+							<mutationThreshold>58</mutationThreshold>
 							<targetClasses>
 								<param>com.ebay.*</param>
 							</targetClasses>

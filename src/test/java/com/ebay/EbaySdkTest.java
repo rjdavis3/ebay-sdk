@@ -5,6 +5,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -13,6 +14,7 @@ import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
 import com.ebay.sell.inventory.inventoryitems.clients.impl.InventoryItemClientImpl;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItem;
@@ -44,8 +46,12 @@ public class EbaySdkTest {
 		mockTokenRequest(expectedRequestBody, Status.OK);
 
 		final URI baseUri = URI.create(driver.getBaseUrl());
+
+		final RequestRetryConfiguration requestRetryConfiguration = RequestRetryConfiguration.newBuilder()
+				.withMininumWait(100, TimeUnit.MILLISECONDS).withTimeout(300, TimeUnit.MILLISECONDS).build();
 		final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(SOME_CLIENT_ID).withClientSecret(SOME_CLIENT_SECRET)
-				.withRefreshToken(SOME_REFRESH_TOKEN).withBaseUri(baseUri).build();
+				.withRefreshToken(SOME_REFRESH_TOKEN).withRequestRetryConfiguration(requestRetryConfiguration)
+				.withBaseUri(baseUri).build();
 
 		mockGetInventoryItem();
 
@@ -71,8 +77,11 @@ public class EbaySdkTest {
 
 		final URI baseUri = URI.create(driver.getBaseUrl());
 
+		final RequestRetryConfiguration requestRetryConfiguration = RequestRetryConfiguration.newBuilder()
+				.withMininumWait(100, TimeUnit.MILLISECONDS).withTimeout(300, TimeUnit.MILLISECONDS).build();
 		final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(SOME_CLIENT_ID).withClientSecret(SOME_CLIENT_SECRET)
-				.withRuName(SOME_RU_NAME).withCode(SOME_AUTHORIZATION_CODE).withBaseUri(baseUri).build();
+				.withRuName(SOME_RU_NAME).withCode(SOME_AUTHORIZATION_CODE)
+				.withRequestRetryConfiguration(requestRetryConfiguration).withBaseUri(baseUri).build();
 
 		mockGetInventoryItem();
 

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -20,6 +21,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
@@ -65,7 +67,9 @@ public class OfferClientImplTest {
 
 		final UserToken userToken = new UserToken(tokenClient, SOME_REFRESH_TOKEN);
 
-		offerClient = new OfferClientImpl(baseUri, userToken);
+		final RequestRetryConfiguration requestRetryConfiguration = RequestRetryConfiguration.newBuilder()
+				.withMininumWait(100, TimeUnit.MILLISECONDS).withTimeout(300, TimeUnit.MILLISECONDS).build();
+		offerClient = new OfferClientImpl(baseUri, userToken, requestRetryConfiguration);
 	}
 
 	@Test
@@ -98,9 +102,17 @@ public class OfferClientImplTest {
 	@Test(expected = EbayErrorException.class)
 	public void givenSomeInternalServerErrorAndSomeOfferIdWhenRetrievingOfferThenThrowNewEbayErrorException() {
 		final Status expectedResponseStatus = Status.INTERNAL_SERVER_ERROR;
-
 		final String expectedResponseBody = SOME_EBAY_ERROR_MESSAGE;
-		mockGetOffer(expectedResponseStatus, expectedResponseBody);
+		driver.addExpectation(
+				onRequestTo(new StringBuilder().append(OfferClientImpl.OFFER_RESOURCE).append(FORWARD_SLASH)
+						.append(SOME_OFFER_ID).toString())
+								.withHeader(OfferClientImpl.AUTHORIZATION_HEADER,
+										new StringBuilder().append(OfferClientImpl.OAUTH_USER_TOKEN_PREFIX)
+												.append(SOME_OAUTH_USER_TOKEN).toString())
+								.withMethod(Method.GET),
+				giveResponse(expectedResponseBody, MediaType.APPLICATION_JSON)
+						.withStatus(expectedResponseStatus.getStatusCode()))
+				.anyTimes();
 
 		offerClient.getOffer(SOME_OFFER_ID);
 	}
@@ -230,7 +242,15 @@ public class OfferClientImplTest {
 		final Status expectedResponseStatus = Status.INTERNAL_SERVER_ERROR;
 
 		final String expectedResponseBody = SOME_EBAY_ERROR_MESSAGE;
-		mockGetOfferBySku(expectedResponseStatus, expectedResponseBody, SOME_OAUTH_USER_TOKEN);
+		driver.addExpectation(
+				onRequestTo(OfferClientImpl.OFFER_RESOURCE).withParam(OfferClientImpl.SKU_QUERY_PARAMETER, SOME_SKU)
+						.withHeader(OfferClientImpl.AUTHORIZATION_HEADER,
+								new StringBuilder().append(OfferClientImpl.OAUTH_USER_TOKEN_PREFIX)
+										.append(SOME_OAUTH_USER_TOKEN).toString())
+						.withMethod(Method.GET),
+				giveResponse(expectedResponseBody, MediaType.APPLICATION_JSON)
+						.withStatus(expectedResponseStatus.getStatusCode()))
+				.anyTimes();
 
 		offerClient.getOfferBySku(SOME_SKU);
 	}

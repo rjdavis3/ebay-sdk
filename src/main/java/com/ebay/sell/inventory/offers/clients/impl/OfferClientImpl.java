@@ -6,6 +6,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response.Status;
 
 import com.ebay.clients.impl.EbayClientImpl;
+import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.sell.inventory.offers.clients.OfferClient;
 import com.ebay.sell.inventory.offers.models.Listing;
@@ -18,8 +19,9 @@ public class OfferClientImpl extends EbayClientImpl implements OfferClient {
 	static final String SKU_QUERY_PARAMETER = "sku";
 	static final String PUBLISH_SUBRESOURCE = "publish";
 
-	public OfferClientImpl(final URI baseUri, final UserToken userToken) {
-		super(baseUri, userToken);
+	public OfferClientImpl(final URI baseUri, final UserToken userToken,
+			final RequestRetryConfiguration requestRetryConfiguration) {
+		super(baseUri, userToken, requestRetryConfiguration);
 	}
 
 	@Override
