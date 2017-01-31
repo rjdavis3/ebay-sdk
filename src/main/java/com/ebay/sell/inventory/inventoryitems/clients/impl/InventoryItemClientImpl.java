@@ -13,7 +13,7 @@ import com.ebay.sell.inventory.inventoryitems.models.InventoryItems;
 
 public class InventoryItemClientImpl extends EbayClientImpl implements InventoryItemClient {
 
-	static final String INVENTORY_ITEM_RESOURCE = "/sell/inventory/v1/inventory_item";
+	public static final String INVENTORY_ITEM_RESOURCE = "/sell/inventory/v1/inventory_item";
 	static final String LIMIT_QUERY_PARAMETER = "limit";
 	static final String OFFSET_QUERY_PARAMETER = "offset";
 

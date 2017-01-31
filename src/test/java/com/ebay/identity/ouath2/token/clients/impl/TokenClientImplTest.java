@@ -5,7 +5,6 @@ import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
-import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -26,11 +25,11 @@ public class TokenClientImplTest {
 
 	private static final char EQUAL = '=';
 	private static final char AMPERSAND = '&';
-	private static final String SOME_CLIENT_ID = UUID.randomUUID().toString();
-	private static final String SOME_CLIENT_SECRET = UUID.randomUUID().toString();
-	private static final String SOME_ACCESS_TOKEN = UUID.randomUUID().toString();
+	private static final String SOME_CLIENT_ID = "some-client-id";
+	private static final String SOME_CLIENT_SECRET = "some-client-secret";
+	private static final String SOME_ACCESS_TOKEN = "some-access-token";
 	private static final int SOME_EXPIRES_IN = 7200;
-	private static final String SOME_REFRESH_TOKEN = UUID.randomUUID().toString();
+	private static final String SOME_REFRESH_TOKEN = "some-refresh-token";
 	private static final int SOME_REFRESH_TOKEN_EXPIRES_IN = 7200;
 	private static final String SOME_TOKEN_TYPE = "User Access Token";
 
@@ -67,7 +66,7 @@ public class TokenClientImplTest {
 	}
 
 	@Test(expected = EbayErrorException.class)
-	public void givenValidRuNameAndInvvalidAuthorizationCodeWhenGeneratingAccessTokenThenThrowNewEbayErrorException()
+	public void givenValidRuNameAndInvalidAuthorizationCodeWhenGeneratingAccessTokenThenThrowNewEbayErrorException()
 			throws JAXBException {
 		final String ruName = "some-RuName";
 		final String code = "some-authorization-code";

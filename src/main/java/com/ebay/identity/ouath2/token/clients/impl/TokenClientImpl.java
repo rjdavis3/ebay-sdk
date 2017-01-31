@@ -18,12 +18,12 @@ import com.ebay.identity.oauth2.token.models.Token;
 
 public class TokenClientImpl implements TokenClient {
 
-	static final String TOKEN_RESOURCE = "/identity/v1/oauth2/token";
-	static final String GRANT_TYPE = "grant_type";
-	static final String REDIRECT_URI = "redirect_uri";
-	static final String REFRESH_TOKEN = "refresh_token";
-	static final String CODE = "code";
-	static final String AUTHORIZATION_CODE = "authorization_code";
+	public static final String TOKEN_RESOURCE = "/identity/v1/oauth2/token";
+	public static final String GRANT_TYPE = "grant_type";
+	public static final String REFRESH_TOKEN = "refresh_token";
+	public static final String REDIRECT_URI = "redirect_uri";
+	public static final String CODE = "code";
+	public static final String AUTHORIZATION_CODE = "authorization_code";
 
 	private static final Client REST_CLIENT = ClientBuilder.newClient()
 			.property(ClientProperties.CONNECT_TIMEOUT, 60000).property(ClientProperties.READ_TIMEOUT, 600000);

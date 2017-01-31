@@ -2,6 +2,8 @@ package com.ebay;
 
 import java.net.URI;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.ebay.identity.oauth2.token.models.UserToken;
@@ -22,41 +24,40 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	public static final URI SANDBOX_URI = URI.create("https://api.sandbox.ebay.com");
 	public static final URI PRODUCTION_URI = URI.create("https://api.ebay.com");
 
-	private final UserToken userToken;
-
 	private final InventoryItemClient inventoryItemClient;
 	private final InventoryItemGroupClient inventoryItemGroupClient;
 	private final OfferClient offerClient;
 
-	public EbaySdk(final String clientId, final String clientSecret, final String refreshToken) {
-		this(clientId, clientSecret, refreshToken, false);
+	static interface ClientIdStep {
+		ClientSecretStep withClientId(final String clientId);
 	}
 
-	public EbaySdk(final String clientId, final String clientSecret, final String refreshToken, final boolean sandbox) {
-		final URI baseUri = sandbox ? SANDBOX_URI : PRODUCTION_URI;
-
-		final TokenClient tokenClient = new TokenClientImpl(baseUri, clientId, clientSecret);
-		userToken = new UserToken(tokenClient, refreshToken);
-
-		inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken);
-		inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken);
-		offerClient = new OfferClientImpl(baseUri, userToken);
+	static interface ClientSecretStep {
+		CredentialsStep withClientSecret(final String clientSecret);
 	}
 
-	public EbaySdk(final String clientId, final String clientSecret, final String ruName, final String code) {
-		this(clientId, clientSecret, ruName, code, false);
+	static interface CredentialsStep {
+		SandboxStep withRefreshToken(final String refreshToken);
+
+		CodeStep withRuName(final String ruName);
 	}
 
-	public EbaySdk(final String clientId, final String clientSecret, final String ruName, final String code,
-			final boolean sandbox) {
-		final URI baseUri = sandbox ? SANDBOX_URI : PRODUCTION_URI;
-		final TokenClient tokenClient = new TokenClientImpl(baseUri, clientId, clientSecret);
-		final Token accessToken = tokenClient.getAccessToken(ruName, code);
-		userToken = new UserToken(tokenClient, accessToken.getRefreshToken());
+	static interface CodeStep {
+		SandboxStep withCode(final String code);
+	}
 
-		inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken);
-		inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken);
-		offerClient = new OfferClientImpl(baseUri, userToken);
+	static interface SandboxStep {
+		BuildStep withSandbox(final boolean sandbox);
+
+		BuildStep withBaseUri(final URI baseUri);
+	}
+
+	static interface BuildStep {
+		EbaySdk build();
+	}
+
+	public static ClientIdStep newBuilder() {
+		return new Steps();
 	}
 
 	@Override
@@ -117,6 +118,89 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	@Override
 	public void updateInventoryItemGroup(final InventoryItemGroup inventoryItemGroup) {
 		inventoryItemGroupClient.updateInventoryItemGroup(inventoryItemGroup);
+	}
+
+	private EbaySdk(final Steps steps) {
+		this.inventoryItemClient = steps.inventoryItemClient;
+		this.inventoryItemGroupClient = steps.inventoryItemGroupClient;
+		this.offerClient = steps.offerClient;
+	}
+
+	private static class Steps
+			implements ClientIdStep, ClientSecretStep, CredentialsStep, CodeStep, SandboxStep, BuildStep {
+
+		private InventoryItemClient inventoryItemClient;
+		private InventoryItemGroupClient inventoryItemGroupClient;
+		private OfferClient offerClient;
+
+		private String clientId;
+		private String clientSecret;
+		private URI baseUri;
+		private String refreshToken;
+		private String ruName;
+		private String code;
+
+		@Override
+		public EbaySdk build() {
+			final TokenClient tokenClient = new TokenClientImpl(baseUri, clientId, clientSecret);
+
+			final UserToken userToken;
+			if (StringUtils.isNotBlank(refreshToken)) {
+				userToken = new UserToken(tokenClient, refreshToken);
+			} else {
+				final Token token = tokenClient.getAccessToken(ruName, code);
+				userToken = new UserToken(tokenClient, token.getRefreshToken());
+			}
+
+			inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken);
+			inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken);
+			offerClient = new OfferClientImpl(baseUri, userToken);
+
+			return new EbaySdk(this);
+		}
+
+		@Override
+		public BuildStep withSandbox(final boolean sandbox) {
+			this.baseUri = sandbox ? SANDBOX_URI : PRODUCTION_URI;
+			return this;
+		}
+
+		@Override
+		public SandboxStep withCode(final String code) {
+			this.code = code;
+			return this;
+		}
+
+		@Override
+		public SandboxStep withRefreshToken(final String refreshToken) {
+			this.refreshToken = refreshToken;
+			return this;
+		}
+
+		@Override
+		public CodeStep withRuName(final String ruName) {
+			this.ruName = ruName;
+			return this;
+		}
+
+		@Override
+		public CredentialsStep withClientSecret(final String clientSecret) {
+			this.clientSecret = clientSecret;
+			return this;
+		}
+
+		@Override
+		public ClientSecretStep withClientId(final String clientId) {
+			this.clientId = clientId;
+			return this;
+		}
+
+		@Override
+		public BuildStep withBaseUri(URI baseUri) {
+			this.baseUri = baseUri;
+			return this;
+		}
+
 	}
 
 }
