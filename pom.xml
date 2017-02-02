@@ -4,8 +4,47 @@
 	<groupId>com.github.rjdavis3</groupId>
 	<artifactId>ebay-sdk</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>ebay-sdk</name>
+
+	<name>eBay SDK</name>
 	<description>Java SDK for eBay REST APIs</description>
+	<url>https://github.com/rjdavis3/ebay-sdk</url>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<url>https://github.com/rjdavis3/ebay-sdk/issues</url>
+		<system>GitHub</system>
+	</issueManagement>
+
+	<developers>
+		<developer>
+			<name>R.J. Davis</name>
+			<email>rjdavis3@me.com</email>
+			<organizationUrl>https://github.com/rjdavis3</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git://github.com/rjdavis3/ebay-sdk.git</connection>
+		<developerConnection>scm:git:ssh://github.com:rjdavis3/ebay-sdk.git</developerConnection>
+		<url>https://github.com/rjdavis3/ebay-sdk/tree/master</url>
+	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -173,6 +212,31 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
