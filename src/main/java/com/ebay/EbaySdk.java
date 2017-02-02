@@ -28,6 +28,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	private final InventoryItemClient inventoryItemClient;
 	private final InventoryItemGroupClient inventoryItemGroupClient;
 	private final OfferClient offerClient;
+	private final String refreshToken;
 
 	public static interface ClientIdStep {
 		ClientSecretStep withClientId(final String clientId);
@@ -63,6 +64,10 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 
 	public static ClientIdStep newBuilder() {
 		return new Steps();
+	}
+
+	public String getRefreshToken() {
+		return refreshToken;
 	}
 
 	@Override
@@ -129,6 +134,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		this.inventoryItemClient = steps.inventoryItemClient;
 		this.inventoryItemGroupClient = steps.inventoryItemGroupClient;
 		this.offerClient = steps.offerClient;
+		this.refreshToken = steps.refreshToken;
 	}
 
 	private static class Steps implements ClientIdStep, ClientSecretStep, CredentialsStep, CodeStep, SandboxStep,
@@ -137,11 +143,11 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		private InventoryItemClient inventoryItemClient;
 		private InventoryItemGroupClient inventoryItemGroupClient;
 		private OfferClient offerClient;
+		private String refreshToken;
 
 		private String clientId;
 		private String clientSecret;
 		private URI baseUri;
-		private String refreshToken;
 		private String ruName;
 		private String code;
 		private RequestRetryConfiguration requestRetryConfiguration;
@@ -150,13 +156,12 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		public EbaySdk build() {
 			final TokenClient tokenClient = new TokenClientImpl(baseUri, clientId, clientSecret);
 
-			final UserToken userToken;
-			if (StringUtils.isNotBlank(refreshToken)) {
-				userToken = new UserToken(tokenClient, refreshToken);
-			} else {
+			if (StringUtils.isBlank(refreshToken)) {
 				final Token token = tokenClient.getAccessToken(ruName, code);
-				userToken = new UserToken(tokenClient, token.getRefreshToken());
+				refreshToken = token.getRefreshToken();
 			}
+
+			final UserToken userToken = new UserToken(tokenClient, refreshToken);
 
 			inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken, requestRetryConfiguration);
 			inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken, requestRetryConfiguration);

@@ -53,6 +53,8 @@ public class EbaySdkTest {
 				.withRefreshToken(SOME_REFRESH_TOKEN).withRequestRetryConfiguration(requestRetryConfiguration)
 				.withBaseUri(baseUri).build();
 
+		assertEquals(SOME_REFRESH_TOKEN, ebaySdk.getRefreshToken());
+
 		mockGetInventoryItem();
 
 		final InventoryItem actualInventoryItem = ebaySdk.getInventoryItem(SOME_SKU);
@@ -82,6 +84,8 @@ public class EbaySdkTest {
 		final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(SOME_CLIENT_ID).withClientSecret(SOME_CLIENT_SECRET)
 				.withRuName(SOME_RU_NAME).withCode(SOME_AUTHORIZATION_CODE)
 				.withRequestRetryConfiguration(requestRetryConfiguration).withBaseUri(baseUri).build();
+
+		assertEquals(SOME_REFRESH_TOKEN, ebaySdk.getRefreshToken());
 
 		mockGetInventoryItem();
 
