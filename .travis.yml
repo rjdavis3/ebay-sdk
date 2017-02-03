@@ -10,8 +10,13 @@ cache:
   - $HOME/.m2
 
 deploy:
-  -
-    provider: script
+  - provider: developscript
     script: .travis/deploy.sh
     skip_cleanup: true
-
+    on:
+      branch: develop
+  - provider: masterscript
+    script: .travis/deploy.sh
+    skip_cleanup: true
+    on:
+      branch: master
