@@ -5,18 +5,12 @@ jdk:
 
 script: mvn --settings .travis/settings.xml clean  verify
 
-cache:
-  directories:
-  - $HOME/.m2
-
 deploy:
-  - provider: developscript
+  -
+    provider: script
     script: .travis/deploy.sh
     skip_cleanup: true
     on:
-      branch: develop
-  - provider: masterscript
-    script: .travis/deploy.sh
-    skip_cleanup: true
-    on:
-      branch: master
+      repo: rjdavis3/ebay-sdk
+      tags: true
+      jdk: oraclejdk8
