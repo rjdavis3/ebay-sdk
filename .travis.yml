@@ -1,7 +1,21 @@
 language: java
-script: mvn clean install
-jdk: oraclejdk8
+
+jdk:
+  - oraclejdk8
+
+script: mvn --settings .travis/settings.xml clean  verify
+
 cache:
   directories:
   - $HOME/.m2
+
+deploy:
+  -
+    provider: script
+    script: .travis/deploy.sh
+    skip_cleanup: true
+    on:
+      repo: rjdavis3/ebay-sdk
+      tags: true
+      jdk: oraclejdk8
 
