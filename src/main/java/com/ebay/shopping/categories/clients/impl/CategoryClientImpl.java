@@ -28,8 +28,6 @@ public class CategoryClientImpl implements CategoryClient {
 
 	private static final Client CLIENT = ClientBuilder.newClient().property(ClientProperties.CONNECT_TIMEOUT, 60000)
 			.property(ClientProperties.READ_TIMEOUT, 600000);
-	private static final URI SANDBOX_URI = URI.create("http://open.api.sandbox.ebay.com/Shopping");
-	private static final URI PRODUCTION_URI = URI.create("http://open.api.ebay.com/Shopping");
 	private static final String CALL_NAME_QUERY_PARAMETER = "callname";
 	private static final String APP_ID_QUERY_PARAMETER = "appid";
 	private static final String VERSION_QUERY_PARAMETER = "version";
@@ -42,11 +40,6 @@ public class CategoryClientImpl implements CategoryClient {
 
 	private final String clientId;
 	private final URI uri;
-
-	public CategoryClientImpl(final String clientId, final boolean sandbox) {
-		this.clientId = clientId;
-		this.uri = sandbox ? SANDBOX_URI : PRODUCTION_URI;
-	}
 
 	public CategoryClientImpl(final String clientId, final URI uri) {
 		this.clientId = clientId;

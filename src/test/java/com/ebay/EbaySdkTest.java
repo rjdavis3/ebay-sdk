@@ -51,7 +51,7 @@ public class EbaySdkTest {
 				.withMininumWait(100, TimeUnit.MILLISECONDS).withTimeout(300, TimeUnit.MILLISECONDS).build();
 		final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(SOME_CLIENT_ID).withClientSecret(SOME_CLIENT_SECRET)
 				.withRefreshToken(SOME_REFRESH_TOKEN).withRequestRetryConfiguration(requestRetryConfiguration)
-				.withBaseUri(baseUri).build();
+				.withBaseUri(baseUri).withShoppingUri(baseUri).build();
 
 		assertEquals(SOME_REFRESH_TOKEN, ebaySdk.getRefreshToken());
 
@@ -83,7 +83,8 @@ public class EbaySdkTest {
 				.withMininumWait(100, TimeUnit.MILLISECONDS).withTimeout(300, TimeUnit.MILLISECONDS).build();
 		final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(SOME_CLIENT_ID).withClientSecret(SOME_CLIENT_SECRET)
 				.withRuName(SOME_RU_NAME).withCode(SOME_AUTHORIZATION_CODE)
-				.withRequestRetryConfiguration(requestRetryConfiguration).withBaseUri(baseUri).build();
+				.withRequestRetryConfiguration(requestRetryConfiguration).withBaseUri(baseUri).withShoppingUri(baseUri)
+				.build();
 
 		assertEquals(SOME_REFRESH_TOKEN, ebaySdk.getRefreshToken());
 

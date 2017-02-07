@@ -1,6 +1,7 @@
 package com.ebay;
 
 import java.net.URI;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,16 +20,23 @@ import com.ebay.sell.inventory.inventoryitems.models.InventoryItems;
 import com.ebay.sell.inventory.offers.clients.OfferClient;
 import com.ebay.sell.inventory.offers.clients.impl.OfferClientImpl;
 import com.ebay.sell.inventory.offers.models.Offer;
+import com.ebay.shopping.categories.clients.CategoryClient;
+import com.ebay.shopping.categories.clients.impl.CategoryClientImpl;
+import com.ebay.shopping.categories.models.CategoryType;
 
-public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, OfferClient {
+public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, OfferClient, CategoryClient {
 
 	public static final URI SANDBOX_URI = URI.create("https://api.sandbox.ebay.com");
 	public static final URI PRODUCTION_URI = URI.create("https://api.ebay.com");
+	public static final URI SHOPPING_SANDBOX_URI = URI.create("http://open.api.sandbox.ebay.com/Shopping");
+	public static final URI SHOPPING_PRODUCTION_URI = URI.create("http://open.api.ebay.com/Shopping");
+
+	private final String refreshToken;
 
 	private final InventoryItemClient inventoryItemClient;
 	private final InventoryItemGroupClient inventoryItemGroupClient;
 	private final OfferClient offerClient;
-	private final String refreshToken;
+	private final CategoryClient categoryClient;
 
 	public static interface ClientIdStep {
 		ClientSecretStep withClientId(final String clientId);
@@ -55,7 +63,11 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	public static interface SandboxStep {
 		BuildStep withSandbox(final boolean sandbox);
 
-		BuildStep withBaseUri(final URI baseUri);
+		ShoppingUriStep withBaseUri(final URI baseUri);
+	}
+
+	public static interface ShoppingUriStep {
+		BuildStep withShoppingUri(final URI shoppingUri);
 	}
 
 	public static interface BuildStep {
@@ -130,24 +142,38 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		inventoryItemGroupClient.updateInventoryItemGroup(inventoryItemGroup);
 	}
 
+	@Override
+	public CategoryType get(final String categoryId) {
+		return categoryClient.get(categoryId);
+	}
+
+	@Override
+	public List<CategoryType> getChildren(final String categoryId) {
+		return categoryClient.getChildren(categoryId);
+	}
+
 	private EbaySdk(final Steps steps) {
 		this.inventoryItemClient = steps.inventoryItemClient;
 		this.inventoryItemGroupClient = steps.inventoryItemGroupClient;
 		this.offerClient = steps.offerClient;
 		this.refreshToken = steps.refreshToken;
+		this.categoryClient = steps.categoryClient;
 	}
 
 	private static class Steps implements ClientIdStep, ClientSecretStep, CredentialsStep, CodeStep, SandboxStep,
-			RequestRetryConfigurationStep, BuildStep {
+			ShoppingUriStep, RequestRetryConfigurationStep, BuildStep {
+
+		private String refreshToken;
 
 		private InventoryItemClient inventoryItemClient;
 		private InventoryItemGroupClient inventoryItemGroupClient;
 		private OfferClient offerClient;
-		private String refreshToken;
+		private CategoryClient categoryClient;
 
 		private String clientId;
 		private String clientSecret;
 		private URI baseUri;
+		private URI shoppingUri;
 		private String ruName;
 		private String code;
 		private RequestRetryConfiguration requestRetryConfiguration;
@@ -166,13 +192,20 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 			inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken, requestRetryConfiguration);
 			inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken, requestRetryConfiguration);
 			offerClient = new OfferClientImpl(baseUri, userToken, requestRetryConfiguration);
+			categoryClient = new CategoryClientImpl(clientId, shoppingUri);
 
 			return new EbaySdk(this);
 		}
 
 		@Override
 		public BuildStep withSandbox(final boolean sandbox) {
-			this.baseUri = sandbox ? SANDBOX_URI : PRODUCTION_URI;
+			if (sandbox) {
+				this.baseUri = SANDBOX_URI;
+				this.shoppingUri = SHOPPING_SANDBOX_URI;
+			} else {
+				this.baseUri = PRODUCTION_URI;
+				this.shoppingUri = SHOPPING_PRODUCTION_URI;
+			}
 			return this;
 		}
 
@@ -207,7 +240,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		}
 
 		@Override
-		public BuildStep withBaseUri(final URI baseUri) {
+		public ShoppingUriStep withBaseUri(final URI baseUri) {
 			this.baseUri = baseUri;
 			return this;
 		}
@@ -215,6 +248,12 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		@Override
 		public SandboxStep withRequestRetryConfiguration(final RequestRetryConfiguration requestRetryConfiguration) {
 			this.requestRetryConfiguration = requestRetryConfiguration;
+			return this;
+		}
+
+		@Override
+		public BuildStep withShoppingUri(final URI shoppingUri) {
+			this.shoppingUri = shoppingUri;
 			return this;
 		}
 

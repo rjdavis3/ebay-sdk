@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.ebay.EbaySdk;
 import com.ebay.shopping.categories.clients.CategoryClient;
 import com.ebay.shopping.categories.models.CategoryType;
 
@@ -14,7 +15,7 @@ public class CategoryClientDriver {
 
 	private static final String CLIENT_ID = System.getenv("EBAY_CLIENT_ID");
 
-	private final CategoryClient categoryClient = new CategoryClientImpl(CLIENT_ID, true);
+	private final CategoryClient categoryClient = new CategoryClientImpl(CLIENT_ID, EbaySdk.SHOPPING_SANDBOX_URI);
 
 	@Test
 	public void given293CategoryIdWhenRetrievingCategoryThenReturnConsumerElectronicsCategory() {
