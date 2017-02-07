@@ -3,6 +3,8 @@ package com.ebay.shopping.categories.clients.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import com.ebay.shopping.categories.clients.CategoryClient;
@@ -26,6 +28,14 @@ public class CategoryClientDriver {
 		assertEquals(categoryId, actualCategory.getCategoryIDPath());
 		assertEquals("Consumer Electronics", actualCategory.getCategoryNamePath());
 		assertFalse(actualCategory.isLeafCategory());
+	}
+
+	@Test
+	public void givenNegativeOneCategoryIdWhenRetrievingChildrenCategoriesThenReturnThirtyFiveCategories() {
+		final String categoryId = "-1";
+		final List<CategoryType> categories = categoryClient.getChildren(categoryId);
+
+		assertEquals(35, categories.size());
 	}
 
 }
