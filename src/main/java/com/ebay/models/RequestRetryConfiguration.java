@@ -1,4 +1,4 @@
-package com.ebay.clients.models;
+package com.ebay.models;
 
 import java.util.concurrent.TimeUnit;
 

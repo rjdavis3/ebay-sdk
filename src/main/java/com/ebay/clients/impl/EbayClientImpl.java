@@ -22,9 +22,9 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.identity.oauth2.token.models.UserToken;
+import com.ebay.models.RequestRetryConfiguration;
 import com.github.rholder.retry.Attempt;
 import com.github.rholder.retry.RetryException;
 import com.github.rholder.retry.RetryListener;
