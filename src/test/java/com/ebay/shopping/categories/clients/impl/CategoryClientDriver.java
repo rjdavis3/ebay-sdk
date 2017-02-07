@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.ebay.EbaySdk;
+import com.ebay.models.Marketplace;
 import com.ebay.shopping.categories.clients.CategoryClient;
 import com.ebay.shopping.categories.models.CategoryType;
 
@@ -15,10 +16,11 @@ public class CategoryClientDriver {
 
 	private static final String CLIENT_ID = System.getenv("EBAY_CLIENT_ID");
 
-	private final CategoryClient categoryClient = new CategoryClientImpl(CLIENT_ID, EbaySdk.SHOPPING_SANDBOX_URI);
+	private final CategoryClient categoryClient = new CategoryClientImpl(CLIENT_ID, Marketplace.UNITED_STATES,
+			EbaySdk.SHOPPING_SANDBOX_URI);
 
 	@Test
-	public void given293CategoryIdWhenRetrievingCategoryThenReturnConsumerElectronicsCategory() {
+	public void given293CategoryIdWhenRetrievingEbayUsCategoryThenReturnConsumerElectronicsCategory() {
 		final String categoryId = "293";
 		final CategoryType actualCategory = categoryClient.get(categoryId);
 
@@ -32,7 +34,7 @@ public class CategoryClientDriver {
 	}
 
 	@Test
-	public void givenNegativeOneCategoryIdWhenRetrievingChildrenCategoriesThenReturnThirtyFiveCategories() {
+	public void givenNegativeOneCategoryIdWhenRetrievingEbayUsChildrenCategoriesThenReturnThirtyFiveCategories() {
 		final String categoryId = "-1";
 		final List<CategoryType> categories = categoryClient.getChildren(categoryId);
 

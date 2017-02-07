@@ -19,11 +19,11 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.ebay.identity.oauth2.token.models.UserToken;
+import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.inventory.inventoryitems.clients.InventoryItemClient;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItem;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItems;

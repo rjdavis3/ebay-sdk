@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import com.ebay.EbaySdk;
-import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
+import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.inventory.inventoryitems.clients.InventoryItemClient;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItem;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItems;

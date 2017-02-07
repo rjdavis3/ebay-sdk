@@ -8,9 +8,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ebay.EbaySdk;
-import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
+import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.inventory.inventoryitemgroups.clients.InventoryItemGroupClient;
 import com.ebay.sell.inventory.inventoryitemgroups.models.InventoryItemGroup;
 

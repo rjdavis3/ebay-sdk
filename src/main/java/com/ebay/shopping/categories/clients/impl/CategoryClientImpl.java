@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientProperties;
 
 import com.ebay.exceptions.EbayErrorException;
+import com.ebay.models.Marketplace;
 import com.ebay.shopping.categories.clients.CategoryClient;
 import com.ebay.shopping.categories.models.AckCodeType;
 import com.ebay.shopping.categories.models.CategoryType;
@@ -39,10 +40,12 @@ public class CategoryClientImpl implements CategoryClient {
 	private static final String CHILD_CATEGORIES_SELECTOR = "childcategories";
 
 	private final String clientId;
+	private final String shoppingSiteId;
 	private final URI uri;
 
-	public CategoryClientImpl(final String clientId, final URI uri) {
+	public CategoryClientImpl(final String clientId, final Marketplace marketplace, final URI uri) {
 		this.clientId = clientId;
+		this.shoppingSiteId = marketplace.getShoppingSiteId();
 		this.uri = uri;
 	}
 
@@ -50,8 +53,8 @@ public class CategoryClientImpl implements CategoryClient {
 	public CategoryType get(final String categoryId) {
 		final Response response = CLIENT.target(uri).queryParam(CALL_NAME_QUERY_PARAMETER, GET_CATEGORY_INFO)
 				.queryParam(APP_ID_QUERY_PARAMETER, clientId).queryParam(VERSION_QUERY_PARAMETER, SHOPPING_API_VERSION)
-				.queryParam(SITE_ID_QUERY_PARAMETER, 0).queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId).request()
-				.get();
+				.queryParam(SITE_ID_QUERY_PARAMETER, shoppingSiteId).queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId)
+				.request().get();
 		final GetCategoryInfoResponseType getCategoryInfoResponse = response
 				.readEntity(GetCategoryInfoResponseType.class);
 		final AckCodeType ackCodeType = getCategoryInfoResponse.getAck();
@@ -67,8 +70,8 @@ public class CategoryClientImpl implements CategoryClient {
 		final Response response = CLIENT.target(uri).queryParam(CALL_NAME_QUERY_PARAMETER, GET_CATEGORY_INFO)
 				.queryParam(INCLUDE_SELECTOR_QUERY_PARAMETER, CHILD_CATEGORIES_SELECTOR)
 				.queryParam(APP_ID_QUERY_PARAMETER, clientId).queryParam(VERSION_QUERY_PARAMETER, SHOPPING_API_VERSION)
-				.queryParam(SITE_ID_QUERY_PARAMETER, 0).queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId).request()
-				.get();
+				.queryParam(SITE_ID_QUERY_PARAMETER, shoppingSiteId).queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId)
+				.request().get();
 		final GetCategoryInfoResponseType getCategoryInfoResponse = response
 				.readEntity(GetCategoryInfoResponseType.class);
 		final AckCodeType ackCodeType = getCategoryInfoResponse.getAck();

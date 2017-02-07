@@ -5,11 +5,12 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
+import com.ebay.models.Marketplace;
+import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.inventory.inventoryitemgroups.clients.InventoryItemGroupClient;
 import com.ebay.sell.inventory.inventoryitemgroups.clients.impl.InventoryItemGroupClientImpl;
 import com.ebay.sell.inventory.inventoryitemgroups.models.InventoryItemGroup;
@@ -31,6 +32,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	public static final URI SHOPPING_SANDBOX_URI = URI.create("http://open.api.sandbox.ebay.com/Shopping");
 	public static final URI SHOPPING_PRODUCTION_URI = URI.create("http://open.api.ebay.com/Shopping");
 
+	private final Marketplace marketplace;
 	private final String refreshToken;
 
 	private final InventoryItemClient inventoryItemClient;
@@ -43,7 +45,11 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	}
 
 	public static interface ClientSecretStep {
-		CredentialsStep withClientSecret(final String clientSecret);
+		MarketplaceStep withClientSecret(final String clientSecret);
+	}
+
+	public static interface MarketplaceStep {
+		CredentialsStep withMarketplace(final Marketplace marketplace);
 	}
 
 	public static interface CredentialsStep {
@@ -76,6 +82,10 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 
 	public static ClientIdStep newBuilder() {
 		return new Steps();
+	}
+
+	public Marketplace getMarketplace() {
+		return marketplace;
 	}
 
 	public String getRefreshToken() {
@@ -153,16 +163,19 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	}
 
 	private EbaySdk(final Steps steps) {
+		this.marketplace = steps.marketplace;
+		this.refreshToken = steps.refreshToken;
+
 		this.inventoryItemClient = steps.inventoryItemClient;
 		this.inventoryItemGroupClient = steps.inventoryItemGroupClient;
 		this.offerClient = steps.offerClient;
-		this.refreshToken = steps.refreshToken;
 		this.categoryClient = steps.categoryClient;
 	}
 
-	private static class Steps implements ClientIdStep, ClientSecretStep, CredentialsStep, CodeStep, SandboxStep,
-			ShoppingUriStep, RequestRetryConfigurationStep, BuildStep {
+	private static class Steps implements ClientIdStep, ClientSecretStep, MarketplaceStep, CredentialsStep, CodeStep,
+			SandboxStep, ShoppingUriStep, RequestRetryConfigurationStep, BuildStep {
 
+		private Marketplace marketplace;
 		private String refreshToken;
 
 		private InventoryItemClient inventoryItemClient;
@@ -192,7 +205,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 			inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken, requestRetryConfiguration);
 			inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken, requestRetryConfiguration);
 			offerClient = new OfferClientImpl(baseUri, userToken, requestRetryConfiguration);
-			categoryClient = new CategoryClientImpl(clientId, shoppingUri);
+			categoryClient = new CategoryClientImpl(clientId, marketplace, shoppingUri);
 
 			return new EbaySdk(this);
 		}
@@ -228,7 +241,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		}
 
 		@Override
-		public CredentialsStep withClientSecret(final String clientSecret) {
+		public MarketplaceStep withClientSecret(final String clientSecret) {
 			this.clientSecret = clientSecret;
 			return this;
 		}
@@ -254,6 +267,12 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		@Override
 		public BuildStep withShoppingUri(final URI shoppingUri) {
 			this.shoppingUri = shoppingUri;
+			return this;
+		}
+
+		@Override
+		public CredentialsStep withMarketplace(final Marketplace marketplace) {
+			this.marketplace = marketplace;
 			return this;
 		}
 
