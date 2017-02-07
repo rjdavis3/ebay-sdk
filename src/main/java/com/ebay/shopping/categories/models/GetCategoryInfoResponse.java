@@ -1,14 +1,11 @@
 package com.ebay.shopping.categories.models;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement(name = "GetCategoryInfoResponse", namespace = "urn:ebay:apis:eBLBaseComponents")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GetCategoryInfoResponse {
 
@@ -21,7 +18,7 @@ public class GetCategoryInfoResponse {
 	@XmlElement(name = "Version")
 	private String version;
 	@XmlElement(name = "CategoryArray")
-	private List<Category> categories = new LinkedList<>();
+	private CategoryArray categoryArray;
 	@XmlElement(name = "CategoryCount")
 	private int categoryCount;
 	@XmlElement(name = "UpdateTime")
@@ -61,12 +58,12 @@ public class GetCategoryInfoResponse {
 		this.version = version;
 	}
 
-	public List<Category> getCategories() {
-		return categories;
+	public CategoryArray getCategoryArray() {
+		return categoryArray;
 	}
 
-	public void setCategories(List<Category> categories) {
-		this.categories = categories;
+	public void setCategoryArray(CategoryArray categoryArray) {
+		this.categoryArray = categoryArray;
 	}
 
 	public int getCategoryCount() {
