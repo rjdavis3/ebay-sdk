@@ -1,9 +1,9 @@
 package com.ebay.shopping.categories.clients;
 
-import com.ebay.shopping.categories.models.Category;
+import com.ebay.shopping.categories.models.CategoryType;
 
 public interface CategoryClient {
 
-	public Category get(final String categoryId);
+	public CategoryType get(final String categoryId);
 
 }

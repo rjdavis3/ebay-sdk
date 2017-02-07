@@ -6,7 +6,7 @@ import static org.junit.Assert.assertFalse;
 import org.junit.Test;
 
 import com.ebay.shopping.categories.clients.CategoryClient;
-import com.ebay.shopping.categories.models.Category;
+import com.ebay.shopping.categories.models.CategoryType;
 
 public class CategoryClientDriver {
 
@@ -17,13 +17,13 @@ public class CategoryClientDriver {
 	@Test
 	public void given293CategoryIdWhenRetrievingCategoryThenReturnConsumerElectronicsCategory() {
 		final String categoryId = "293";
-		final Category actualCategory = categoryClient.get(categoryId);
+		final CategoryType actualCategory = categoryClient.get(categoryId);
 
-		assertEquals(categoryId, actualCategory.getCategoryId());
-		assertEquals(1, actualCategory.getCategoryLevel());
-		assertEquals("-1", actualCategory.getCategoryParentId());
+		assertEquals(categoryId, actualCategory.getCategoryID());
+		assertEquals(1, actualCategory.getCategoryLevel().intValue());
+		assertEquals("-1", actualCategory.getCategoryParentID());
 		assertEquals("Consumer Electronics", actualCategory.getCategoryName());
-		assertEquals(categoryId, actualCategory.getCategoryIdPath());
+		assertEquals(categoryId, actualCategory.getCategoryIDPath());
 		assertEquals("Consumer Electronics", actualCategory.getCategoryNamePath());
 		assertFalse(actualCategory.isLeafCategory());
 	}
