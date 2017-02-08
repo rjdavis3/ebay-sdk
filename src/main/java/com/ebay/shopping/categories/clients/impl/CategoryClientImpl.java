@@ -54,7 +54,7 @@ public class CategoryClientImpl implements CategoryClient {
 	}
 
 	@Override
-	public CategoryType get(final String categoryId) {
+	public CategoryType getCategory(final String categoryId) {
 		final Response response = CLIENT.target(uri).queryParam(CALL_NAME_QUERY_PARAMETER, GET_CATEGORY_INFO)
 				.queryParam(APP_ID_QUERY_PARAMETER, clientId).queryParam(VERSION_QUERY_PARAMETER, SHOPPING_API_VERSION)
 				.queryParam(SITE_ID_QUERY_PARAMETER, shoppingSiteId).queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId)
@@ -72,7 +72,7 @@ public class CategoryClientImpl implements CategoryClient {
 	}
 
 	@Override
-	public List<CategoryType> getChildren(final String categoryId) {
+	public List<CategoryType> getCategoryWithChildren(final String categoryId) {
 		final Response response = CLIENT.target(uri).queryParam(CALL_NAME_QUERY_PARAMETER, GET_CATEGORY_INFO)
 				.queryParam(INCLUDE_SELECTOR_QUERY_PARAMETER, CHILD_CATEGORIES_SELECTOR)
 				.queryParam(APP_ID_QUERY_PARAMETER, clientId).queryParam(VERSION_QUERY_PARAMETER, SHOPPING_API_VERSION)

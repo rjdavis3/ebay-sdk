@@ -6,8 +6,8 @@ import com.ebay.shopping.categories.models.CategoryType;
 
 public interface CategoryClient {
 
-	public CategoryType get(final String categoryId);
+	public CategoryType getCategory(final String categoryId);
 
-	public List<CategoryType> getChildren(final String categoryId);
+	public List<CategoryType> getCategoryWithChildren(final String categoryId);
 
 }

@@ -63,7 +63,7 @@ public class CategoryClientImplTest {
 		final String expectedResponseBody = CONSUMER_ELECTRONICS_XML_RESPONSE_BODY;
 		getSingleCategory(expectedCategoryId, expectedResponseBody);
 
-		final CategoryType actualCategory = categoryClient.get(expectedCategoryId);
+		final CategoryType actualCategory = categoryClient.getCategory(expectedCategoryId);
 
 		assertEquals(CONSUMER_ELECTRONICS_CATEGORY_ID, actualCategory.getCategoryID());
 		assertEquals(CONSUMER_ELECTRONICS_CATEGORY_LEVEL, actualCategory.getCategoryLevel());
@@ -80,7 +80,7 @@ public class CategoryClientImplTest {
 		final String expectedResponseBody = INVALID_CATEGORY_ON_CURRENT_SITE_XML_RESPONSE_BODY;
 		getSingleCategory(expectedCategoryId, expectedResponseBody);
 
-		final CategoryType actualCategory = categoryClient.get(expectedCategoryId);
+		final CategoryType actualCategory = categoryClient.getCategory(expectedCategoryId);
 
 		assertNull(actualCategory);
 	}
@@ -91,7 +91,7 @@ public class CategoryClientImplTest {
 		final String expectedResponseBody = INVALID_APPLICATION_ID_XML_RESPONSE_BODY;
 		getSingleCategory(expectedCategoryId, expectedResponseBody);
 
-		categoryClient.get(expectedCategoryId);
+		categoryClient.getCategory(expectedCategoryId);
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class CategoryClientImplTest {
 		final String expectedResponseBody = CONSUMER_ELECTRONICS_WITH_CHILDREN_XML_RESPONSE_BODY;
 		getCategoryChildren(expectedCategoryId, expectedResponseBody);
 
-		final List<CategoryType> actualChildren = categoryClient.getChildren(expectedCategoryId);
+		final List<CategoryType> actualChildren = categoryClient.getCategoryWithChildren(expectedCategoryId);
 
 		assertEquals(13, actualChildren.size());
 	}
@@ -111,7 +111,7 @@ public class CategoryClientImplTest {
 		final String expectedResponseBody = INVALID_CATEGORY_ON_CURRENT_SITE_XML_RESPONSE_BODY;
 		getCategoryChildren(expectedCategoryId, expectedResponseBody);
 
-		final List<CategoryType> actualChildren = categoryClient.getChildren(expectedCategoryId);
+		final List<CategoryType> actualChildren = categoryClient.getCategoryWithChildren(expectedCategoryId);
 
 		assertEquals(Collections.emptyList(), actualChildren);
 	}
@@ -122,7 +122,7 @@ public class CategoryClientImplTest {
 		final String expectedResponseBody = INVALID_APPLICATION_ID_XML_RESPONSE_BODY;
 		getCategoryChildren(expectedCategoryId, expectedResponseBody);
 
-		categoryClient.getChildren(expectedCategoryId);
+		categoryClient.getCategoryWithChildren(expectedCategoryId);
 	}
 
 	private void getSingleCategory(final String expectedCategoryId, final String expectedResponseBody) {

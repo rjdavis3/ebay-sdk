@@ -22,7 +22,7 @@ public class CategoryClientDriver {
 	@Test
 	public void given293CategoryIdWhenRetrievingEbayUsCategoryThenReturnConsumerElectronicsCategory() {
 		final String categoryId = "293";
-		final CategoryType actualCategory = categoryClient.get(categoryId);
+		final CategoryType actualCategory = categoryClient.getCategory(categoryId);
 
 		assertEquals(categoryId, actualCategory.getCategoryID());
 		assertEquals(1, actualCategory.getCategoryLevel().intValue());
@@ -36,7 +36,7 @@ public class CategoryClientDriver {
 	@Test
 	public void givenNegativeOneCategoryIdWhenRetrievingEbayUsChildrenCategoriesThenReturnThirtyFiveCategories() {
 		final String categoryId = "-1";
-		final List<CategoryType> categories = categoryClient.getChildren(categoryId);
+		final List<CategoryType> categories = categoryClient.getCategoryWithChildren(categoryId);
 
 		assertEquals(35, categories.size());
 	}

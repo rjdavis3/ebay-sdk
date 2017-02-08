@@ -153,13 +153,13 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	}
 
 	@Override
-	public CategoryType get(final String categoryId) {
-		return categoryClient.get(categoryId);
+	public CategoryType getCategory(final String categoryId) {
+		return categoryClient.getCategory(categoryId);
 	}
 
 	@Override
-	public List<CategoryType> getChildren(final String categoryId) {
-		return categoryClient.getChildren(categoryId);
+	public List<CategoryType> getCategoryWithChildren(final String categoryId) {
+		return categoryClient.getCategoryWithChildren(categoryId);
 	}
 
 	private EbaySdk(final Steps steps) {
