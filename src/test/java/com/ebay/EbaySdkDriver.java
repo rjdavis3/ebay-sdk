@@ -7,7 +7,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.ebay.clients.models.RequestRetryConfiguration;
+import com.ebay.models.Marketplace;
+import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItem;
 
 public class EbaySdkDriver {
@@ -21,7 +22,7 @@ public class EbaySdkDriver {
 	@Test
 	public void givenRefreshTokenAndSkuWhenRetrievingInventoryItemThenReturnInventoryItem() {
 		final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(CLIENT_ID).withClientSecret(CLIENT_SECRET)
-				.withRefreshToken(REFRESH_TOKEN)
+				.withMarketplace(Marketplace.UNITED_STATES).withRefreshToken(REFRESH_TOKEN)
 				.withRequestRetryConfiguration(RequestRetryConfiguration.newBuilder()
 						.withMininumWait(5, TimeUnit.SECONDS).withTimeout(2, TimeUnit.MINUTES).build())
 				.withSandbox(true).build();
@@ -36,7 +37,7 @@ public class EbaySdkDriver {
 	@Ignore
 	public void givenRuNameAndAuthorizationCodeAndSkuWhenRetrievingInventoryItemThenReturnInventoryItem() {
 		final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(CLIENT_ID).withClientSecret(CLIENT_SECRET)
-				.withRuName(RU_NAME).withCode(AUTHORIZATION_CODE)
+				.withMarketplace(Marketplace.UNITED_STATES).withRuName(RU_NAME).withCode(AUTHORIZATION_CODE)
 				.withRequestRetryConfiguration(RequestRetryConfiguration.newBuilder()
 						.withMininumWait(5, TimeUnit.SECONDS).withTimeout(2, TimeUnit.MINUTES).build())
 				.withSandbox(true).build();

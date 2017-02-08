@@ -6,8 +6,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response.Status;
 
 import com.ebay.clients.impl.EbayClientImpl;
-import com.ebay.clients.models.RequestRetryConfiguration;
 import com.ebay.identity.oauth2.token.models.UserToken;
+import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.inventory.offers.clients.OfferClient;
 import com.ebay.sell.inventory.offers.models.Listing;
 import com.ebay.sell.inventory.offers.models.Offer;
