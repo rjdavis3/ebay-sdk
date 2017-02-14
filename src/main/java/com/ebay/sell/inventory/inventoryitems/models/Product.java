@@ -2,7 +2,18 @@ package com.ebay.sell.inventory.inventoryitems.models;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.ebay.sell.inventory.inventoryitems.models.adapters.AspectsAdapter;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Product {
 
 	private String brand;
@@ -14,6 +25,9 @@ public class Product {
 	private String subtitle;
 	private String title;
 	private List<String> upc = new LinkedList<String>();
+	@XmlJavaTypeAdapter(AspectsAdapter.class)
+	@XmlElement
+	private Map<String, List<String>> aspects;
 
 	public String getBrand() {
 		return brand;
@@ -85,6 +99,14 @@ public class Product {
 
 	public void setUpc(List<String> upc) {
 		this.upc = upc;
+	}
+
+	public Map<String, List<String>> getAspects() {
+		return aspects;
+	}
+
+	public void setAspects(Map<String, List<String>> aspects) {
+		this.aspects = aspects;
 	}
 
 }

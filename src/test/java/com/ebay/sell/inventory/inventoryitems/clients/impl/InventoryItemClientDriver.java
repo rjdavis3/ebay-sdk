@@ -2,8 +2,13 @@ package com.ebay.sell.inventory.inventoryitems.clients.impl;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ebay.EbaySdk;
@@ -27,18 +32,62 @@ public class InventoryItemClientDriver {
 					.build());
 
 	@Test
+	@Ignore
 	public void givenSomeSkuWhenRetrievingInventoryItemThenReturnInventoryItem() throws Exception {
 		final InventoryItem actualInventoryItem = inventoryItemClient.getInventoryItem("540008");
 
 		assertEquals("540008", actualInventoryItem.getSku());
 		assertEquals("NEW", actualInventoryItem.getCondition());
+		assertEquals(Arrays.asList("Chocolate Chip Peanut Crunch", "Banana"),
+				actualInventoryItem.getProduct().getAspects().get("Flavor"));
+		assertEquals(Arrays.asList("12 - 2.4 oz (68 g) bar [28.8 oz (816 g)] box"),
+				actualInventoryItem.getProduct().getAspects().get("Size"));
 	}
 
+	@Test
+	public void givenSomeInventoryItemWhenUpdatingWithNewAspectsThenUpdateInventoryItem() {
+		final InventoryItem inventoryItem = inventoryItemClient.getInventoryItem("540008");
+
+		final Map<String, List<String>> expectedApsects = new HashMap<>();
+		expectedApsects.put("Size", Arrays.asList("12 - 2.4 oz (68 g) bar [28.8 oz (816 g)] box", "Large"));
+		expectedApsects.put("Flavor", Arrays.asList("Chocolate Chip Peanut Crunch", "Apple"));
+
+		inventoryItem.getProduct().setAspects(expectedApsects);
+		inventoryItemClient.updateInventoryItem(inventoryItem);
+
+		final InventoryItem actualInventoryItem = inventoryItemClient.getInventoryItem("540008");
+
+		assertEquals("540008", actualInventoryItem.getSku());
+		assertEquals("NEW", actualInventoryItem.getCondition());
+		assertEquals(expectedApsects.get("Flavor"), actualInventoryItem.getProduct().getAspects().get("Flavor"));
+		assertEquals(expectedApsects.get("Size"), actualInventoryItem.getProduct().getAspects().get("Size"));
+	}
+
+	@Test
+	@Ignore
+	public void givenSomeInventoryItemWhenUpdatingAspectsThenUpdateInventoryItem() {
+		final InventoryItem inventoryItem = inventoryItemClient.getInventoryItem("540008");
+
+		inventoryItem.getProduct().getAspects().get("Flavor").add("Coconut");
+		inventoryItemClient.updateInventoryItem(inventoryItem);
+
+		final InventoryItem actualInventoryItem = inventoryItemClient.getInventoryItem("540008");
+
+		assertEquals("540008", actualInventoryItem.getSku());
+		assertEquals("NEW", actualInventoryItem.getCondition());
+		assertEquals(Arrays.asList("Chocolate Chip Peanut Crunch", "Banana", "Coconut"),
+				actualInventoryItem.getProduct().getAspects().get("Flavor"));
+		assertEquals(Arrays.asList("12 - 2.4 oz (68 g) bar [28.8 oz (816 g)] box", "Large"),
+				actualInventoryItem.getProduct().getAspects().get("Size"));
+	}
+
+	@Ignore
 	@Test(expected = EbayErrorException.class)
 	public void givenSomeInvalidSkuWhenRetrievingInventoryItemThenThrowNewEbayErrorException() throws Exception {
 		inventoryItemClient.getInventoryItem("540009103184");
 	}
 
+	@Ignore
 	@Test
 	public void givenSomeLimitAndSomeOffsetWhenRetrievingInventoryItemsThenReturnInventoryItems() throws Exception {
 		final InventoryItems actualInventoryItems = inventoryItemClient.getInventoryItems(2, 1);
