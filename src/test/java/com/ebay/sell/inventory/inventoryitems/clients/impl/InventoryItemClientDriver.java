@@ -48,19 +48,19 @@ public class InventoryItemClientDriver {
 	public void givenSomeInventoryItemWhenUpdatingWithNewAspectsThenUpdateInventoryItem() {
 		final InventoryItem inventoryItem = inventoryItemClient.getInventoryItem("540008");
 
-		final Map<String, List<String>> expectedApsects = new HashMap<>();
-		expectedApsects.put("Size", Arrays.asList("12 - 2.4 oz (68 g) bar [28.8 oz (816 g)] box", "Large"));
-		expectedApsects.put("Flavor", Arrays.asList("Chocolate Chip Peanut Crunch", "Apple"));
+		final Map<String, List<String>> expectedAspects = new HashMap<>();
+		expectedAspects.put("Size", Arrays.asList("816 g", "Small"));
+		expectedAspects.put("Flavor", Arrays.asList("Chocolate Chip Peanut Crunch", "Apple"));
 
-		inventoryItem.getProduct().setAspects(expectedApsects);
+		inventoryItem.getProduct().setAspects(expectedAspects);
 		inventoryItemClient.updateInventoryItem(inventoryItem);
 
 		final InventoryItem actualInventoryItem = inventoryItemClient.getInventoryItem("540008");
 
 		assertEquals("540008", actualInventoryItem.getSku());
 		assertEquals("NEW", actualInventoryItem.getCondition());
-		assertEquals(expectedApsects.get("Flavor"), actualInventoryItem.getProduct().getAspects().get("Flavor"));
-		assertEquals(expectedApsects.get("Size"), actualInventoryItem.getProduct().getAspects().get("Size"));
+		assertEquals(expectedAspects.get("Flavor"), actualInventoryItem.getProduct().getAspects().get("Flavor"));
+		assertEquals(expectedAspects.get("Size"), actualInventoryItem.getProduct().getAspects().get("Size"));
 	}
 
 	@Test
