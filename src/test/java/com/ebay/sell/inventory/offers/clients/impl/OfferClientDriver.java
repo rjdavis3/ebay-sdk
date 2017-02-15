@@ -3,6 +3,7 @@ package com.ebay.sell.inventory.offers.clients.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Ignore;
@@ -57,14 +58,16 @@ public class OfferClientDriver {
 	}
 
 	@Test
-	@Ignore
 	public void givenSomeSkuWhenRetrievingOfferThenReturnOffer() throws Exception {
 		final String sku = "540002";
 		final Offer actualOffer = offerClient.getOfferBySku(sku);
 		assertEquals("5006155010", actualOffer.getOfferId());
+		assertEquals("USD", actualOffer.getPricingSummary().getPrice().getCurrency());
+		assertEquals(new BigDecimal("40.0"), actualOffer.getPricingSummary().getPrice().getValue());
 	}
 
 	@Test
+	@Ignore
 	public void givenSomeOfferIdWhenPublishingOfferThenReturnListingId() throws Exception {
 		final String offerId = "5006155010";
 		final String actualListingId = offerClient.publishOffer(offerId);
