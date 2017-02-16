@@ -28,9 +28,7 @@ public class OfferClientImpl extends EbayClientImpl implements OfferClient {
 	public Offer getOffer(final String offerId) {
 		final WebTarget webTarget = getWebTarget().path(offerId);
 		final Offer offer = get(webTarget, Offer.class, Status.OK, Status.NOT_FOUND);
-		if (offer != null) {
-			offer.setOfferId(offerId);
-		}
+		offer.setOfferId(offerId);
 		return offer;
 	}
 
@@ -51,8 +49,10 @@ public class OfferClientImpl extends EbayClientImpl implements OfferClient {
 	public Offer getOfferBySku(final String sku) {
 		final WebTarget webTarget = getWebTarget().queryParam(SKU_QUERY_PARAMETER, sku);
 		final Offers offers = get(webTarget, Offers.class, Status.OK, Status.NOT_FOUND);
-		if (offers == null) {
-			return null;
+		if (offers.hasErrors()) {
+			final Offer offer = new Offer();
+			offer.setErrors(offers.getErrors());
+			return offer;
 		}
 		return offers.getOffers().stream().findFirst().get();
 	}

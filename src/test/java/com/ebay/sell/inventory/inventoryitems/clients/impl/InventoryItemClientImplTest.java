@@ -4,9 +4,11 @@ import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyRespo
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MediaType;
@@ -19,6 +21,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.ebay.clients.models.EbayError;
+import com.ebay.clients.models.MockEbayResponse;
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
@@ -40,6 +44,7 @@ public class InventoryItemClientImplTest {
 	private static final String SOME_SKU = "1444";
 	private static final String SOME_EBAY_ERROR_MESSAGE = "{\r\n  \"errors\": [\r\n    {\r\n      \"errorId\": 25710,\r\n      \"domain\": \"API_INVENTORY\",\r\n      \"subdomain\": \"Selling\",\r\n      \"category\": \"REQUEST\",\r\n      \"message\": \"We didn't find the entity you are requesting. Please verify the request\"\r\n    }\r\n  ]\r\n}";
 	private static final String SOME_REFRESH_TOKEN = "some-refresh-token";
+	private static final int SOME_ERROR_ID = 25703;
 
 	private InventoryItemClient inventoryItemClient;
 
@@ -109,14 +114,19 @@ public class InventoryItemClientImplTest {
 		assertEquals(SOME_SKU, actualInventoryItem.getSku());
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void givenSomeInvalidSkuWhenRetrievingInventoryItemThenThrowNewEbayErrorExceptionWith404StatusCodeAndSomeEbayErrorMessage() {
+	@Test
+	public void givenSomeInvalidSkuWhenRetrievingInventoryItemThenReturnInventoryItemWithError() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
-		final String expectedResponseBody = SOME_EBAY_ERROR_MESSAGE;
+		final MockEbayResponse expectedError = buildErrorResponse();
+
+		final String expectedResponseBody = new JSONObject(expectedError).toString();
 		mockGetInventoryItem(expectedResponseStatus, expectedResponseBody);
 
-		inventoryItemClient.getInventoryItem(SOME_SKU);
+		final InventoryItem actualInventoryItem = inventoryItemClient.getInventoryItem(SOME_SKU);
+
+		assertTrue(actualInventoryItem.hasErrors());
+		assertEquals(SOME_ERROR_ID, actualInventoryItem.getErrors().stream().findFirst().get().getErrorId());
 	}
 
 	@Test
@@ -247,6 +257,14 @@ public class InventoryItemClientImplTest {
 												.append(SOME_OAUTH_USER_TOKEN).toString())
 								.withMethod(Method.DELETE),
 				giveEmptyResponse().withStatus(expectedResponseStatus.getStatusCode()));
+	}
+
+	private MockEbayResponse buildErrorResponse() {
+		final MockEbayResponse expectedOffer = new MockEbayResponse();
+		final EbayError error = new EbayError();
+		error.setErrorId(SOME_ERROR_ID);
+		expectedOffer.setErrors(Arrays.asList(error));
+		return expectedOffer;
 	}
 
 }

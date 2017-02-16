@@ -1,6 +1,8 @@
 package com.ebay.sell.inventory.inventoryitems.models;
 
-public class InventoryItem {
+import com.ebay.clients.models.EbayResponse;
+
+public class InventoryItem extends EbayResponse {
 
 	private String sku;
 	private String condition;
@@ -45,8 +47,7 @@ public class InventoryItem {
 		return packageWeightAndSize;
 	}
 
-	public void setPackageWeightAndSize(
-			PackageWeightAndSize packageWeightAndSize) {
+	public void setPackageWeightAndSize(PackageWeightAndSize packageWeightAndSize) {
 		this.packageWeightAndSize = packageWeightAndSize;
 	}
 

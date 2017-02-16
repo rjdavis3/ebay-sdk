@@ -3,7 +3,9 @@ package com.ebay.sell.inventory.inventoryitemgroups.models;
 import java.util.LinkedList;
 import java.util.List;
 
-public class InventoryItemGroup {
+import com.ebay.clients.models.EbayResponse;
+
+public class InventoryItemGroup extends EbayResponse {
 
 	private String inventoryItemGroupKey;
 	private String title;

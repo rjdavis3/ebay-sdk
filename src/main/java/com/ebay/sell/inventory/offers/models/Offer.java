@@ -2,7 +2,9 @@ package com.ebay.sell.inventory.offers.models;
 
 import java.util.List;
 
-public class Offer {
+import com.ebay.clients.models.EbayResponse;
+
+public class Offer extends EbayResponse {
 
 	private String offerId;
 	private int availableQuantity;

@@ -1,6 +1,7 @@
 package com.ebay.sell.inventory.inventoryitems.clients.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,19 +33,22 @@ public class InventoryItemClientDriver {
 					.build());
 
 	@Test
-	@Ignore
-	public void givenSomeSkuWhenRetrievingInventoryItemThenReturnInventoryItem() throws Exception {
+	public void givenSomeSkuWhenRetrievingInventoryItemThenReturnInventoryItem() {
 		final InventoryItem actualInventoryItem = inventoryItemClient.getInventoryItem("540008");
 
 		assertEquals("540008", actualInventoryItem.getSku());
 		assertEquals("NEW", actualInventoryItem.getCondition());
-		assertEquals(Arrays.asList("Chocolate Chip Peanut Crunch", "Banana"),
-				actualInventoryItem.getProduct().getAspects().get("Flavor"));
-		assertEquals(Arrays.asList("12 - 2.4 oz (68 g) bar [28.8 oz (816 g)] box"),
-				actualInventoryItem.getProduct().getAspects().get("Size"));
 	}
 
 	@Test
+	public void givenInvalidSkuWhenRetrievingInventoryItemThenReturnInventoryItemWithErrors() {
+		final InventoryItem actualInventoryItem = inventoryItemClient.getInventoryItem("540008-bojangles");
+
+		assertTrue(actualInventoryItem.hasErrors());
+	}
+
+	@Test
+	@Ignore
 	public void givenSomeInventoryItemWhenUpdatingWithNewAspectsThenUpdateInventoryItem() {
 		final InventoryItem inventoryItem = inventoryItemClient.getInventoryItem("540008");
 
