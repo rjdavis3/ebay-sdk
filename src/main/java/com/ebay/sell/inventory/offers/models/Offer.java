@@ -102,11 +102,11 @@ public class Offer extends EbayResponse {
 		this.pricingSummary = pricingSummary;
 	}
 
-	public int getQuantityLimitPerBuyer() {
+	public Integer getQuantityLimitPerBuyer() {
 		return quantityLimitPerBuyer;
 	}
 
-	public void setQuantityLimitPerBuyer(int quantityLimitPerBuyer) {
+	public void setQuantityLimitPerBuyer(Integer quantityLimitPerBuyer) {
 		this.quantityLimitPerBuyer = quantityLimitPerBuyer;
 	}
 
