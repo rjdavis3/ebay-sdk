@@ -33,6 +33,7 @@ public class InventoryItemClientDriver {
 					.build());
 
 	@Test
+	@Ignore
 	public void givenSomeSkuWhenRetrievingInventoryItemThenReturnInventoryItem() {
 		final InventoryItem actualInventoryItem = inventoryItemClient.getInventoryItem("540008");
 
@@ -41,6 +42,7 @@ public class InventoryItemClientDriver {
 	}
 
 	@Test
+	@Ignore
 	public void givenInvalidSkuWhenRetrievingInventoryItemThenReturnInventoryItemWithErrors() {
 		final InventoryItem actualInventoryItem = inventoryItemClient.getInventoryItem("540008-bojangles");
 
@@ -48,13 +50,12 @@ public class InventoryItemClientDriver {
 	}
 
 	@Test
-	@Ignore
 	public void givenSomeInventoryItemWhenUpdatingWithNewAspectsThenUpdateInventoryItem() {
 		final InventoryItem inventoryItem = inventoryItemClient.getInventoryItem("540008");
 
 		final Map<String, List<String>> expectedAspects = new HashMap<>();
-		expectedAspects.put("Size", Arrays.asList("816 g", "Small"));
-		expectedAspects.put("Flavor", Arrays.asList("Chocolate Chip Peanut Crunch", "Apple"));
+		expectedAspects.put("Size", Arrays.asList("12 - 2.12oz (60g) Bars"));
+		expectedAspects.put("Flavor", Arrays.asList("Banana Nut Muffin"));
 
 		inventoryItem.getProduct().setAspects(expectedAspects);
 		inventoryItemClient.updateInventoryItem(inventoryItem);

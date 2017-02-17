@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.jackson.JacksonFeature;
 
 import com.ebay.exceptions.EbayErrorException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
@@ -26,7 +27,8 @@ public class TokenClientImpl implements TokenClient {
 	public static final String AUTHORIZATION_CODE = "authorization_code";
 
 	private static final Client REST_CLIENT = ClientBuilder.newClient()
-			.property(ClientProperties.CONNECT_TIMEOUT, 60000).property(ClientProperties.READ_TIMEOUT, 600000);
+			.property(ClientProperties.CONNECT_TIMEOUT, 60000).property(ClientProperties.READ_TIMEOUT, 600000)
+			.register(JacksonFeature.class);
 	private final URI baseUri;
 
 	public TokenClientImpl(final URI baseUri, final String clientId, final String clientSecret) {

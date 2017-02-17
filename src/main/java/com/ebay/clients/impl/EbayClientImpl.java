@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Variant;
 
 import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,8 @@ public class EbayClientImpl {
 	public static final String OAUTH_USER_TOKEN_PREFIX = "Bearer ";
 
 	private static final Client REST_CLIENT = ClientBuilder.newClient()
-			.property(ClientProperties.CONNECT_TIMEOUT, 60000).property(ClientProperties.READ_TIMEOUT, 600000);
+			.property(ClientProperties.CONNECT_TIMEOUT, 60000).property(ClientProperties.READ_TIMEOUT, 600000)
+			.register(JacksonFeature.class);
 	private static final String UTF_8_ENCODING = "utf-8";
 	private static final Variant ENTITY_VARIANT = new Variant(MediaType.APPLICATION_JSON_TYPE, Locale.US,
 			UTF_8_ENCODING);
