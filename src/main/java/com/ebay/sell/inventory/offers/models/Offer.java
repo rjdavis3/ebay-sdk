@@ -16,7 +16,7 @@ public class Offer extends EbayResponse {
 	private String marketplaceId;
 	private String merchantLocationKey;
 	private PricingSummary pricingSummary;
-	private int quantityLimitPerBuyer;
+	private Integer quantityLimitPerBuyer;
 	private String sku;
 	private String status;
 	private List<String> storeCategoryNames;
