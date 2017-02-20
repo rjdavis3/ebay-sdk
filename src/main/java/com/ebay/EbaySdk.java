@@ -18,6 +18,9 @@ import com.ebay.sell.inventory.inventoryitems.clients.InventoryItemClient;
 import com.ebay.sell.inventory.inventoryitems.clients.impl.InventoryItemClientImpl;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItem;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItems;
+import com.ebay.sell.inventory.locations.clients.InventoryLocationClient;
+import com.ebay.sell.inventory.locations.clients.impl.InventoryLocationClientImpl;
+import com.ebay.sell.inventory.locations.models.InventoryLocation;
 import com.ebay.sell.inventory.offers.clients.OfferClient;
 import com.ebay.sell.inventory.offers.clients.impl.OfferClientImpl;
 import com.ebay.sell.inventory.offers.models.Offer;
@@ -25,7 +28,8 @@ import com.ebay.shopping.categories.clients.CategoryClient;
 import com.ebay.shopping.categories.clients.impl.CategoryClientImpl;
 import com.ebay.shopping.categories.models.CategoryType;
 
-public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, OfferClient, CategoryClient {
+public class EbaySdk
+		implements InventoryItemGroupClient, InventoryItemClient, OfferClient, CategoryClient, InventoryLocationClient {
 
 	public static final URI SANDBOX_URI = URI.create("https://api.sandbox.ebay.com");
 	public static final URI PRODUCTION_URI = URI.create("https://api.ebay.com");
@@ -39,6 +43,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	private final InventoryItemGroupClient inventoryItemGroupClient;
 	private final OfferClient offerClient;
 	private final CategoryClient categoryClient;
+	private final InventoryLocationClient inventoryLocationClient;
 
 	public static interface ClientIdStep {
 		ClientSecretStep withClientId(final String clientId);
@@ -162,6 +167,22 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		return categoryClient.getCategoryWithChildren(categoryId);
 	}
 
+	@Override
+	public InventoryLocation getInventoryLocation(final String merchantLocationKey) {
+		return inventoryLocationClient.getInventoryLocation(merchantLocationKey);
+	}
+
+	@Override
+	public void deleteInventoryLocation(final String merchantLocationKey) {
+		inventoryLocationClient.deleteInventoryLocation(merchantLocationKey);
+
+	}
+
+	@Override
+	public void createInventoryLocation(final InventoryLocation inventoryLocation) {
+		inventoryLocationClient.createInventoryLocation(inventoryLocation);
+	}
+
 	private EbaySdk(final Steps steps) {
 		this.marketplace = steps.marketplace;
 		this.refreshToken = steps.refreshToken;
@@ -170,6 +191,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		this.inventoryItemGroupClient = steps.inventoryItemGroupClient;
 		this.offerClient = steps.offerClient;
 		this.categoryClient = steps.categoryClient;
+		this.inventoryLocationClient = steps.inventoryLocationClient;
 	}
 
 	private static class Steps implements ClientIdStep, ClientSecretStep, MarketplaceStep, CredentialsStep, CodeStep,
@@ -182,6 +204,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		private InventoryItemGroupClient inventoryItemGroupClient;
 		private OfferClient offerClient;
 		private CategoryClient categoryClient;
+		private InventoryLocationClient inventoryLocationClient;
 
 		private String clientId;
 		private String clientSecret;
@@ -206,6 +229,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 			inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken, requestRetryConfiguration);
 			offerClient = new OfferClientImpl(baseUri, userToken, requestRetryConfiguration);
 			categoryClient = new CategoryClientImpl(clientId, marketplace, shoppingUri);
+			inventoryLocationClient = new InventoryLocationClientImpl(baseUri, userToken, requestRetryConfiguration);
 
 			return new EbaySdk(this);
 		}
