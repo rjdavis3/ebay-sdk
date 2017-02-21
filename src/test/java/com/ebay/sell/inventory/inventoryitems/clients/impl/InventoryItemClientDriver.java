@@ -1,7 +1,7 @@
 package com.ebay.sell.inventory.inventoryitems.clients.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ebay.EbaySdk;
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.exceptions.EbayErrorResponseException;
+import com.ebay.exceptions.EbayNotFoundResponseException;
 import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
 import com.ebay.models.RequestRetryConfiguration;
@@ -42,14 +45,18 @@ public class InventoryItemClientDriver {
 	}
 
 	@Test
-	@Ignore
-	public void givenInvalidSkuWhenRetrievingInventoryItemThenReturnInventoryItemWithErrors() {
-		final InventoryItem actualInventoryItem = inventoryItemClient.getInventoryItem("540008-bojangles");
-
-		assertTrue(actualInventoryItem.hasErrors());
+	public void givenInvalidSkuWhenRetrievingInventoryItemThenThrowNewEbayNotFoundResponseExceptionWith404StatusCodeAndCorrectError() {
+		try {
+			inventoryItemClient.getInventoryItem("540008-bojangles");
+			fail();
+		} catch (EbayNotFoundResponseException e) {
+			assertEquals(Status.NOT_FOUND.getStatusCode(), e.getStatusCode());
+			assertEquals(25710, e.getErrors().stream().findFirst().get().getErrorId());
+		}
 	}
 
 	@Test
+	@Ignore
 	public void givenSomeInventoryItemWhenUpdatingWithNewAspectsThenUpdateInventoryItem() {
 		final InventoryItem inventoryItem = inventoryItemClient.getInventoryItem("540008");
 
@@ -87,7 +94,7 @@ public class InventoryItemClientDriver {
 	}
 
 	@Ignore
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeInvalidSkuWhenRetrievingInventoryItemThenThrowNewEbayErrorException() throws Exception {
 		inventoryItemClient.getInventoryItem("540009103184");
 	}

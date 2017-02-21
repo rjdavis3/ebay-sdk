@@ -23,8 +23,7 @@ public class InventoryLocationClientImpl extends EbayClientImpl implements Inven
 	@Override
 	public InventoryLocation getInventoryLocation(final String merchantLocationKey) {
 		final WebTarget webTarget = getWebTarget().path(merchantLocationKey);
-		final InventoryLocation inventoryLocation = get(webTarget, InventoryLocation.class, Status.OK,
-				Status.NOT_FOUND);
+		final InventoryLocation inventoryLocation = get(webTarget, InventoryLocation.class, Status.OK);
 		inventoryLocation.setMerchantLocationKey(merchantLocationKey);
 		return inventoryLocation;
 	}

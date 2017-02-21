@@ -1,7 +1,6 @@
 package com.ebay.sell.inventory.locations.clients.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +35,6 @@ public class InventoryLocationClientDriver {
 				.getInventoryLocation(inventoryLocationKey);
 
 		assertEquals("Testy_McTestface", actualInventoryLocation.getMerchantLocationKey());
-		assertFalse(actualInventoryLocation.hasErrors());
 	}
 
 	@Test

@@ -3,9 +3,7 @@ package com.ebay.sell.inventory.offers.models;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.ebay.clients.models.EbayResponse;
-
-public class Offers extends EbayResponse {
+public class Offers {
 
 	private int total;
 	private int size;

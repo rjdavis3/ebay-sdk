@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientProperties;
 
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.exceptions.EbayErrorResponseException;
 import com.ebay.models.Marketplace;
 import com.ebay.shopping.categories.clients.CategoryClient;
 import com.ebay.shopping.categories.models.AckCodeType;
@@ -66,7 +66,7 @@ public class CategoryClientImpl implements CategoryClient {
 		} else if (isCategoryInvalidOnCurrentSite(getCategoryInfoResponse)) {
 			return null;
 		}
-		throw new EbayErrorException(response);
+		throw new EbayErrorResponseException(response);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class CategoryClientImpl implements CategoryClient {
 		} else if (isCategoryInvalidOnCurrentSite(getCategoryInfoResponse)) {
 			return Collections.emptyList();
 		}
-		throw new EbayErrorException(response);
+		throw new EbayErrorResponseException(response);
 	}
 
 	private boolean isSuccess(final GetCategoryInfoResponseType getCategoryInfoResponse) {

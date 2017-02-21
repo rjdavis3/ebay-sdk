@@ -26,7 +26,7 @@ public class InventoryItemClientImpl extends EbayClientImpl implements Inventory
 	@Override
 	public InventoryItem getInventoryItem(final String sku) {
 		final WebTarget webTarget = getWebTarget().path(sku);
-		return get(webTarget, InventoryItem.class, Status.OK, Status.NOT_FOUND);
+		return get(webTarget, InventoryItem.class, Status.OK);
 	}
 
 	@Override

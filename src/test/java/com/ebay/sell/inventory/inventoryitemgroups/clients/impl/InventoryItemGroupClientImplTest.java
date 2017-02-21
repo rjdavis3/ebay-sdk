@@ -4,11 +4,9 @@ import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyRespo
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MediaType;
@@ -21,9 +19,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.ebay.clients.models.EbayError;
-import com.ebay.clients.models.MockEbayResponse;
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.clients.models.ErrorResponse;
+import com.ebay.exceptions.EbayErrorResponseException;
+import com.ebay.exceptions.EbayNotFoundResponseException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.ebay.identity.oauth2.token.models.UserToken;
@@ -43,7 +41,6 @@ public class InventoryItemGroupClientImplTest {
 	private static final String SOME_INVENTORY_ITEM_GROUP_KEY = "1444";
 	private static final String SOME_TITLE = "Clif Bar Energy Bar";
 	private static final String SOME_REFRESH_TOKEN = "some-refresh-token";
-	private static final int SOME_ERROR_ID = 257013;
 
 	private InventoryItemGroupClient inventoryItemGroupClient;
 
@@ -87,19 +84,15 @@ public class InventoryItemGroupClientImplTest {
 		assertEquals(SOME_TITLE, actualInventoryItemGroup.getTitle());
 	}
 
-	@Test
-	public void givenSomeInvalidInventoryItemGroupKeyWhenRetrievingInventoryItemGroupThenReturnInventoryItemGroupWithError() {
+	@Test(expected = EbayNotFoundResponseException.class)
+	public void givenSomeInvalidInventoryItemGroupKeyWhenRetrievingInventoryItemGroupThenThrowNewEbayNotFoundResponseException() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
-		final MockEbayResponse errorResponse = buildErrorResponse();
+		final ErrorResponse errorResponse = new ErrorResponse();
 		final String expectedResponseBody = new JSONObject(errorResponse).toString();
 
 		mockGet(expectedResponseStatus, expectedResponseBody);
 
-		final InventoryItemGroup actualInventoryItemGroup = inventoryItemGroupClient
-				.getInventoryItemGroup(SOME_INVENTORY_ITEM_GROUP_KEY);
-
-		assertTrue(actualInventoryItemGroup.hasErrors());
-		assertEquals(SOME_ERROR_ID, actualInventoryItemGroup.getErrors().stream().findFirst().get().getErrorId());
+		inventoryItemGroupClient.getInventoryItemGroup(SOME_INVENTORY_ITEM_GROUP_KEY);
 	}
 
 	@Test
@@ -137,8 +130,8 @@ public class InventoryItemGroupClientImplTest {
 		assertEquals(SOME_INVENTORY_ITEM_GROUP_KEY, actualResponseBodyJsonNode.get("inventoryItemGroupKey").asText());
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void givenSomeInventoryItemWithInvalidAuthorizationWhenUpdatingInventoryItemGroupThenThrowNewEbayErrorExceptionWith401StatusCodeAndSomeEbayErrorMessage() {
+	@Test(expected = EbayErrorResponseException.class)
+	public void givenSomeInventoryItemGroupWithInvalidTitleWhenUpdatingInventoryItemGroupThenThrowNewEbayErrorResponseException() {
 		final Status expectedResponseStatus = Status.BAD_REQUEST;
 		final InventoryItemGroup inventoryItemGroup = new InventoryItemGroup();
 		inventoryItemGroup.setInventoryItemGroupKey(SOME_INVENTORY_ITEM_GROUP_KEY);
@@ -157,7 +150,7 @@ public class InventoryItemGroupClientImplTest {
 		inventoryItemGroupClient.deleteInventoryItemGroup(SOME_INVENTORY_ITEM_GROUP_KEY);
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeInvalidInventoryItemGroupKeyWhenDeletingInventoryItemGroupThenReturnInventoryItemGroupWithError() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
@@ -202,11 +195,4 @@ public class InventoryItemGroupClientImplTest {
 				giveEmptyResponse().withStatus(expectedResponseStatus.getStatusCode()));
 	}
 
-	private MockEbayResponse buildErrorResponse() {
-		final MockEbayResponse expectedOffer = new MockEbayResponse();
-		final EbayError error = new EbayError();
-		error.setErrorId(SOME_ERROR_ID);
-		expectedOffer.setErrors(Arrays.asList(error));
-		return expectedOffer;
-	}
 }

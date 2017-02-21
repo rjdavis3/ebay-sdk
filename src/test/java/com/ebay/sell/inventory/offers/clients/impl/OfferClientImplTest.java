@@ -4,7 +4,6 @@ import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyRespo
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
@@ -21,9 +20,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.ebay.clients.models.EbayError;
-import com.ebay.clients.models.MockEbayResponse;
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.clients.models.ErrorResponse;
+import com.ebay.exceptions.EbayErrorResponseException;
+import com.ebay.exceptions.EbayException;
+import com.ebay.exceptions.EbayNotFoundResponseException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.ebay.identity.oauth2.token.models.UserToken;
@@ -47,7 +47,6 @@ public class OfferClientImplTest {
 	private static final String SOME_LISTING_ID = "223412345678";
 	private static final String SOME_EBAY_ERROR_MESSAGE = "{\r\n  \"errors\": [\r\n    {\r\n      \"errorId\": 25710,\r\n      \"domain\": \"API_INVENTORY\",\r\n      \"subdomain\": \"Selling\",\r\n      \"category\": \"REQUEST\",\r\n      \"message\": \"We didn't find the entity you are requesting. Please verify the request\"\r\n    }\r\n  ]\r\n}";
 	private static final String SOME_REFRESH_TOKEN = "some-refresh-token";
-	private static final int SOME_ERROR_ID = 25703;
 
 	private OfferClient offerClient;
 
@@ -90,23 +89,18 @@ public class OfferClientImplTest {
 		assertEquals(SOME_SKU, actualOffer.getSku());
 	}
 
-	@Test
-	public void givenSomeInvalidOfferIdWhenRetrievingOfferThenReturnOfferWithError() {
+	@Test(expected = EbayNotFoundResponseException.class)
+	public void givenSomeInvalidOfferIdWhenRetrievingOfferThenThrowNewEbayNotFoundResponseException() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
-		final MockEbayResponse expectedOffer = buildErrorResponse();
-
-		final String expectedResponseBody = new JSONObject(expectedOffer).toString();
+		final String expectedResponseBody = new JSONObject(new ErrorResponse()).toString();
 		mockGetOffer(expectedResponseStatus, expectedResponseBody);
 
-		final Offer actualOffer = offerClient.getOffer(SOME_OFFER_ID);
-
-		assertTrue(actualOffer.hasErrors());
-		assertEquals(SOME_ERROR_ID, actualOffer.getErrors().stream().findFirst().get().getErrorId());
+		offerClient.getOffer(SOME_OFFER_ID);
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void givenSomeInternalServerErrorAndSomeOfferIdWhenRetrievingOfferThenThrowNewEbayErrorException() {
+	@Test(expected = EbayException.class)
+	public void givenSomeInternalServerErrorAndSomeOfferIdWhenRetrievingOfferThenThrowNewEbayException() {
 		final Status expectedResponseStatus = Status.INTERNAL_SERVER_ERROR;
 		final String expectedResponseBody = SOME_EBAY_ERROR_MESSAGE;
 		driver.addExpectation(
@@ -140,7 +134,7 @@ public class OfferClientImplTest {
 		assertEquals(SOME_SKU, actualResponseBodyJsonNode.get("sku").asText());
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeOfferWithInvalidMarketPlaceIdWhenUpdatingOfferThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
 		final Offer offer = new Offer();
 		offer.setOfferId(SOME_OFFER_ID);
@@ -175,7 +169,7 @@ public class OfferClientImplTest {
 
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeAlreadyExistingOfferWhenCreatingOfferThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
 		final Offer offer = new Offer();
 		offer.setOfferId(SOME_OFFER_ID);
@@ -231,23 +225,18 @@ public class OfferClientImplTest {
 		assertEquals(SOME_SKU, actualOffer.getSku());
 	}
 
-	@Test
-	public void givenSomeInvalidSkuWhenRetrievingOfferThenReturnOfferWithError() {
+	@Test(expected = EbayNotFoundResponseException.class)
+	public void givenSomeInvalidSkuWhenRetrievingOfferThenThrowNewEbayNotFoundResponseException() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
-		final MockEbayResponse expectedOffer = buildErrorResponse();
-
-		final String expectedResponseBody = new JSONObject(expectedOffer).toString();
+		final String expectedResponseBody = new JSONObject(new ErrorResponse()).toString();
 		mockGetOfferBySku(expectedResponseStatus, expectedResponseBody, SOME_OAUTH_USER_TOKEN);
 
-		final Offer actualOffer = offerClient.getOfferBySku(SOME_SKU);
-
-		assertTrue(actualOffer.hasErrors());
-		assertEquals(SOME_ERROR_ID, actualOffer.getErrors().stream().findFirst().get().getErrorId());
+		offerClient.getOfferBySku(SOME_SKU);
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void givenInternalServerErrorAndSomeSkuWhenRetrievingOfferThenThrowNewEbayErrorException() {
+	@Test(expected = EbayException.class)
+	public void givenInternalServerErrorAndSomeSkuWhenRetrievingOfferThenThrowNewEbayException() {
 		final Status expectedResponseStatus = Status.INTERNAL_SERVER_ERROR;
 
 		final String expectedResponseBody = SOME_EBAY_ERROR_MESSAGE;
@@ -278,7 +267,7 @@ public class OfferClientImplTest {
 		assertEquals(SOME_LISTING_ID, actualListingId);
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeInvalidOfferIdWhenPublishingOfferThenThrowNewEbayErrorException() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
@@ -349,14 +338,6 @@ public class OfferClientImplTest {
 								.withMethod(Method.POST),
 				giveResponse(expectedResponseBody, MediaType.APPLICATION_JSON)
 						.withStatus(expectedResponseStatus.getStatusCode()));
-	}
-
-	private MockEbayResponse buildErrorResponse() {
-		final MockEbayResponse expectedOffer = new MockEbayResponse();
-		final EbayError error = new EbayError();
-		error.setErrorId(SOME_ERROR_ID);
-		expectedOffer.setErrors(Arrays.asList(error));
-		return expectedOffer;
 	}
 
 }

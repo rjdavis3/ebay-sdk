@@ -1,10 +1,9 @@
 package com.ebay.sell.inventory.locations.models;
 
-import com.ebay.clients.models.EbayResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class InventoryLocation extends EbayResponse {
+public class InventoryLocation {
 
 	private String merchantLocationKey;
 	private String merchantLocationStatus;

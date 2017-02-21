@@ -1,8 +1,6 @@
 package com.ebay.sell.inventory.inventoryitems.models;
 
-import com.ebay.clients.models.EbayResponse;
-
-public class InventoryItem extends EbayResponse {
+public class InventoryItem {
 
 	private String sku;
 	private String condition;

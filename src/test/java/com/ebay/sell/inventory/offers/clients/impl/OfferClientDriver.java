@@ -2,7 +2,6 @@ package com.ebay.sell.inventory.offers.clients.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
@@ -11,7 +10,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ebay.EbaySdk;
-import com.ebay.clients.models.EbayError;
 import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
 import com.ebay.models.RequestRetryConfiguration;
@@ -36,16 +34,6 @@ public class OfferClientDriver {
 		final Offer actualOffer = offerClient.getOffer(offerId);
 		assertEquals(offerId, actualOffer.getOfferId());
 		assertEquals("540002", actualOffer.getSku());
-	}
-
-	@Test
-	@Ignore
-	public void givenInvalidOfferIdWhenRetrievingOfferThenReturnNull() throws Exception {
-		final String offerId = "38383838383";
-		final Offer actualOffer = offerClient.getOffer(offerId);
-		assertTrue(actualOffer.hasErrors());
-		final EbayError actualError = actualOffer.getErrors().get(0);
-		assertEquals(25713, actualError.getErrorId());
 	}
 
 	@Test

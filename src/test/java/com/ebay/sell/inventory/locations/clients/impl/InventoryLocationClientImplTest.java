@@ -4,11 +4,9 @@ import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyRespo
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MediaType;
@@ -21,9 +19,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.ebay.clients.models.EbayError;
-import com.ebay.clients.models.MockEbayResponse;
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.clients.models.ErrorResponse;
+import com.ebay.exceptions.EbayErrorResponseException;
+import com.ebay.exceptions.EbayNotFoundResponseException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.ebay.identity.oauth2.token.models.UserToken;
@@ -43,7 +41,6 @@ public class InventoryLocationClientImplTest {
 	private static final String SOME_MERCHANT_LOCATION_KEY = "Ricks_Store";
 	private static final String SOME_NAME = "Rick's Store";
 	private static final String SOME_REFRESH_TOKEN = "some-refresh-token";
-	private static final int SOME_ERROR_ID = 257013;
 
 	private InventoryLocationClient inventoryLocationClient;
 
@@ -87,19 +84,14 @@ public class InventoryLocationClientImplTest {
 		assertEquals(SOME_NAME, actualInventoryLocation.getName());
 	}
 
-	@Test
-	public void givenSomeInvalidMerchantLocationKeyWhenRetrievingInventoryLocationThenReturnInventoryLocationWithError() {
+	@Test(expected = EbayNotFoundResponseException.class)
+	public void givenSomeInvalidMerchantLocationKeyWhenRetrievingInventoryLocationThenThrowNewEbayNotFoundResponseException() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
-		final MockEbayResponse errorResponse = buildErrorResponse();
-		final String expectedResponseBody = new JSONObject(errorResponse).toString();
+		final String expectedResponseBody = new JSONObject(new ErrorResponse()).toString();
 
 		mockGet(expectedResponseStatus, expectedResponseBody);
 
-		final InventoryLocation actualInventoryLocation = inventoryLocationClient
-				.getInventoryLocation(SOME_MERCHANT_LOCATION_KEY);
-
-		assertTrue(actualInventoryLocation.hasErrors());
-		assertEquals(SOME_ERROR_ID, actualInventoryLocation.getErrors().stream().findFirst().get().getErrorId());
+		inventoryLocationClient.getInventoryLocation(SOME_MERCHANT_LOCATION_KEY);
 	}
 
 	@Test
@@ -137,7 +129,7 @@ public class InventoryLocationClientImplTest {
 		assertEquals(SOME_MERCHANT_LOCATION_KEY, actualResponseBodyJsonNode.get("merchantLocationKey").asText());
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeInventoryItemWithInvalidAuthorizationWhenCreatingInventoryLocationThenThrowNewEbayErrorExceptionWith401StatusCodeAndSomeEbayErrorMessage() {
 		final Status expectedResponseStatus = Status.BAD_REQUEST;
 		final InventoryLocation inventoryLocation = new InventoryLocation();
@@ -157,7 +149,7 @@ public class InventoryLocationClientImplTest {
 		inventoryLocationClient.deleteInventoryLocation(SOME_MERCHANT_LOCATION_KEY);
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeInvalidMerchantLocationKeyWhenDeletingInventoryLocationThenReturnInventoryLocationWithError() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
@@ -202,11 +194,4 @@ public class InventoryLocationClientImplTest {
 				giveEmptyResponse().withStatus(expectedResponseStatus.getStatusCode()));
 	}
 
-	private MockEbayResponse buildErrorResponse() {
-		final MockEbayResponse expectedOffer = new MockEbayResponse();
-		final EbayError error = new EbayError();
-		error.setErrorId(SOME_ERROR_ID);
-		expectedOffer.setErrors(Arrays.asList(error));
-		return expectedOffer;
-	}
 }

@@ -3,7 +3,7 @@ package com.ebay.clients.models;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class EbayResponse {
+public class ErrorResponse {
 
 	private List<EbayError> errors = new LinkedList<>();
 

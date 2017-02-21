@@ -15,7 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.exceptions.EbayErrorResponseException;
 import com.ebay.models.Marketplace;
 import com.ebay.shopping.categories.clients.CategoryClient;
 import com.ebay.shopping.categories.models.CategoryType;
@@ -85,8 +85,8 @@ public class CategoryClientImplTest {
 		assertNull(actualCategory);
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void giveSomeMarketplaceAnd293CategoryIdAndInvalidApplicationIdWhenRetrievingCategoryThenThrowNewEbayErrorException() {
+	@Test(expected = EbayErrorResponseException.class)
+	public void giveSomeMarketplaceAnd293CategoryIdAndInvalidApplicationIdWhenRetrievingCategoryThenThrowNewEbayErrorResponseException() {
 		final String expectedCategoryId = CONSUMER_ELECTRONICS_CATEGORY_ID;
 		final String expectedResponseBody = INVALID_APPLICATION_ID_XML_RESPONSE_BODY;
 		getSingleCategory(expectedCategoryId, expectedResponseBody);
@@ -118,8 +118,8 @@ public class CategoryClientImplTest {
 		assertEquals(Collections.emptyList(), actualChildren);
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void giveSomeMarketplaceAnd293CategoryIdAndInvalidApplicationIdWhenRetrievingCategoryChildrenThenThrowNewEbayErrorException() {
+	@Test(expected = EbayErrorResponseException.class)
+	public void giveSomeMarketplaceAnd293CategoryIdAndInvalidApplicationIdWhenRetrievingCategoryChildrenThenThrowNewEbayErrorResponseException() {
 		final String expectedCategoryId = CONSUMER_ELECTRONICS_CATEGORY_ID;
 		final String expectedResponseBody = INVALID_APPLICATION_ID_XML_RESPONSE_BODY;
 		getCategoryChildren(expectedCategoryId, expectedResponseBody);

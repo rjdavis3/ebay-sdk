@@ -13,7 +13,7 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.exceptions.EbayErrorResponseException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 
@@ -45,7 +45,7 @@ public class TokenClientImpl implements TokenClient {
 		if (Status.OK.getStatusCode() == response.getStatus()) {
 			return response.readEntity(Token.class);
 		}
-		throw new EbayErrorException(response);
+		throw new EbayErrorResponseException(response);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class TokenClientImpl implements TokenClient {
 		if (Status.OK.getStatusCode() == response.getStatus()) {
 			return response.readEntity(Token.class);
 		}
-		throw new EbayErrorException(response);
+		throw new EbayErrorResponseException(response);
 	}
 
 	private Response postForm(final Form form) {
