@@ -13,7 +13,7 @@ import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
 import com.ebay.models.Marketplace;
 import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.account.policies.clients.FulfillmentPolicyClient;
-import com.ebay.sell.account.policies.models.CategoryType;
+import com.ebay.sell.account.policies.models.PolicyCategoryType;
 import com.ebay.sell.account.policies.models.FulfillmentPolicy;
 
 public class FulfillmentPolicyClientDriver {
@@ -42,7 +42,7 @@ public class FulfillmentPolicyClientDriver {
 	@Test
 	public void givenUnitedStatesMarketplaceAndAllExcludingMotorVehicalesCategoryTypeNameWhenRetrievingDefaultFulfillmentPolicyThenReturnDefaultFufillmentPolicy() {
 		final FulfillmentPolicy actualFulfillmentPolicy = fulfillmentPolicyClient.getDefaultFulfillmentPolicy(
-				Marketplace.UNITED_STATES, CategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES);
+				Marketplace.UNITED_STATES, PolicyCategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES);
 
 		assertEquals("international shipping policy worldwide", actualFulfillmentPolicy.getName());
 	}
@@ -50,7 +50,7 @@ public class FulfillmentPolicyClientDriver {
 	@Test(expected = IllegalArgumentException.class)
 	public void givenChinaMarketplaceAndAllExcludingMotorVehicalesCategoryTypeNameWhenRetrievingDefaultFulfillmentPolicyThenThrowNewIllegalArgumentException() {
 		fulfillmentPolicyClient.getDefaultFulfillmentPolicy(Marketplace.CHINA,
-				CategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES);
+				PolicyCategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES);
 	}
 
 }

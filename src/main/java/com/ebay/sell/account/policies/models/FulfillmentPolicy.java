@@ -10,7 +10,7 @@ public class FulfillmentPolicy {
 
 	private String name;
 	private String marketplaceId;
-	private List<CategoryType> categoryTypes = new LinkedList<>();
+	private List<PolicyCategoryType> categoryTypes = new LinkedList<>();
 	private String fulfillmentPolicyId;
 
 	public String getName() {
@@ -29,11 +29,11 @@ public class FulfillmentPolicy {
 		this.marketplaceId = marketplaceId;
 	}
 
-	public List<CategoryType> getCategoryTypes() {
+	public List<PolicyCategoryType> getCategoryTypes() {
 		return categoryTypes;
 	}
 
-	public void setCategoryTypes(List<CategoryType> categoryTypes) {
+	public void setCategoryTypes(List<PolicyCategoryType> categoryTypes) {
 		this.categoryTypes = categoryTypes;
 	}
 

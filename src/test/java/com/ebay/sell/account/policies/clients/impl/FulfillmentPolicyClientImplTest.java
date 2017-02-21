@@ -28,7 +28,7 @@ import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.models.Marketplace;
 import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.account.policies.clients.FulfillmentPolicyClient;
-import com.ebay.sell.account.policies.models.CategoryType;
+import com.ebay.sell.account.policies.models.PolicyCategoryType;
 import com.ebay.sell.account.policies.models.FulfillmentPolicies;
 import com.ebay.sell.account.policies.models.FulfillmentPolicy;
 import com.github.restdriver.clientdriver.ClientDriverRequest.Method;
@@ -118,7 +118,7 @@ public class FulfillmentPolicyClientImplTest {
 		mockGetFulfillmentPolicies(Status.OK, responseBody);
 
 		final FulfillmentPolicy actualDefaultFulfillmentPolicy = fulfillmentPolicyClient
-				.getDefaultFulfillmentPolicy(SOME_MARKETPLACE, CategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES);
+				.getDefaultFulfillmentPolicy(SOME_MARKETPLACE, PolicyCategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES);
 
 		assertEquals(thirdExpectedFulfillmentPolicy.getCategoryTypes().get(0).getName(),
 				actualDefaultFulfillmentPolicy.getCategoryTypes().get(0).getName());
@@ -141,11 +141,11 @@ public class FulfillmentPolicyClientImplTest {
 		mockGetFulfillmentPolicies(Status.OK, responseBody);
 
 		try {
-			fulfillmentPolicyClient.getDefaultFulfillmentPolicy(SOME_MARKETPLACE, CategoryType.Name.MOTORS_VEHICLES);
+			fulfillmentPolicyClient.getDefaultFulfillmentPolicy(SOME_MARKETPLACE, PolicyCategoryType.Name.MOTORS_VEHICLES);
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertEquals(String.format(FulfillmentPolicyClientImpl.NO_DEFAULT_FULFILLMENT_POLICY_MESSAGE,
-					SOME_MARKETPLACE.getId(), CategoryType.Name.MOTORS_VEHICLES.toString()), e.getMessage());
+					SOME_MARKETPLACE.getId(), PolicyCategoryType.Name.MOTORS_VEHICLES.toString()), e.getMessage());
 		}
 	}
 
@@ -154,7 +154,7 @@ public class FulfillmentPolicyClientImplTest {
 		final FulfillmentPolicy firstExpectedFulfillmentPolicy = buildFirstExepctedFulfillmentPolicy();
 		final FulfillmentPolicy secondExpectedFulfillmentPolicy = buildSecondExepctedFulfillmentPolicy();
 		secondExpectedFulfillmentPolicy.getCategoryTypes().get(0)
-				.setName(CategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES.toString());
+				.setName(PolicyCategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES.toString());
 		final FulfillmentPolicy thirdExpectedFulfillmentPolicy = buildThirdExepctedFulfillmentPolicy();
 
 		final FulfillmentPolicies fulfillmentPolicies = new FulfillmentPolicies();
@@ -164,18 +164,18 @@ public class FulfillmentPolicyClientImplTest {
 		mockGetFulfillmentPolicies(Status.OK, responseBody);
 
 		try {
-			fulfillmentPolicyClient.getDefaultFulfillmentPolicy(SOME_MARKETPLACE, CategoryType.Name.MOTORS_VEHICLES);
+			fulfillmentPolicyClient.getDefaultFulfillmentPolicy(SOME_MARKETPLACE, PolicyCategoryType.Name.MOTORS_VEHICLES);
 			fail();
 		} catch (IllegalArgumentException e) {
 			assertEquals(String.format(FulfillmentPolicyClientImpl.NO_DEFAULT_FULFILLMENT_POLICY_MESSAGE,
-					SOME_MARKETPLACE.getId(), CategoryType.Name.MOTORS_VEHICLES.toString()), e.getMessage());
+					SOME_MARKETPLACE.getId(), PolicyCategoryType.Name.MOTORS_VEHICLES.toString()), e.getMessage());
 		}
 	}
 
 	private FulfillmentPolicy buildFirstExepctedFulfillmentPolicy() {
 		final FulfillmentPolicy firstExpectedFulfillmentPolicy = new FulfillmentPolicy();
-		final CategoryType firstExpectedFulfillmentPolicyCategoryType = new CategoryType();
-		firstExpectedFulfillmentPolicyCategoryType.setName(CategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES.toString());
+		final PolicyCategoryType firstExpectedFulfillmentPolicyCategoryType = new PolicyCategoryType();
+		firstExpectedFulfillmentPolicyCategoryType.setName(PolicyCategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES.toString());
 		firstExpectedFulfillmentPolicyCategoryType.setDefault(false);
 		firstExpectedFulfillmentPolicy.setCategoryTypes(Arrays.asList(firstExpectedFulfillmentPolicyCategoryType));
 		firstExpectedFulfillmentPolicy.setFulfillmentPolicyId(UUID.randomUUID().toString());
@@ -184,8 +184,8 @@ public class FulfillmentPolicyClientImplTest {
 
 	private FulfillmentPolicy buildSecondExepctedFulfillmentPolicy() {
 		final FulfillmentPolicy secondExpectedFulfillmentPolicy = new FulfillmentPolicy();
-		final CategoryType secondExpectedFulfillmentPolicyCategoryType = new CategoryType();
-		secondExpectedFulfillmentPolicyCategoryType.setName(CategoryType.Name.MOTORS_VEHICLES.toString());
+		final PolicyCategoryType secondExpectedFulfillmentPolicyCategoryType = new PolicyCategoryType();
+		secondExpectedFulfillmentPolicyCategoryType.setName(PolicyCategoryType.Name.MOTORS_VEHICLES.toString());
 		secondExpectedFulfillmentPolicyCategoryType.setDefault(false);
 		secondExpectedFulfillmentPolicy.setCategoryTypes(Arrays.asList(secondExpectedFulfillmentPolicyCategoryType));
 		secondExpectedFulfillmentPolicy.setFulfillmentPolicyId(UUID.randomUUID().toString());
@@ -194,8 +194,8 @@ public class FulfillmentPolicyClientImplTest {
 
 	private FulfillmentPolicy buildThirdExepctedFulfillmentPolicy() {
 		final FulfillmentPolicy thirdExpectedFulfillmentPolicy = new FulfillmentPolicy();
-		final CategoryType thirdExpectedFulfillmentPolicyCategoryType = new CategoryType();
-		thirdExpectedFulfillmentPolicyCategoryType.setName(CategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES.toString());
+		final PolicyCategoryType thirdExpectedFulfillmentPolicyCategoryType = new PolicyCategoryType();
+		thirdExpectedFulfillmentPolicyCategoryType.setName(PolicyCategoryType.Name.ALL_EXCLUDING_MOTORS_VEHICLES.toString());
 		thirdExpectedFulfillmentPolicyCategoryType.setDefault(true);
 		thirdExpectedFulfillmentPolicy.setCategoryTypes(Arrays.asList(thirdExpectedFulfillmentPolicyCategoryType));
 		thirdExpectedFulfillmentPolicy.setFulfillmentPolicyId(UUID.randomUUID().toString());

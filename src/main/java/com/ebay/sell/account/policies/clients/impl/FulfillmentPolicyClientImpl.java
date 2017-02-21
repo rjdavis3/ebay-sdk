@@ -13,7 +13,7 @@ import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.models.Marketplace;
 import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.account.policies.clients.FulfillmentPolicyClient;
-import com.ebay.sell.account.policies.models.CategoryType;
+import com.ebay.sell.account.policies.models.PolicyCategoryType;
 import com.ebay.sell.account.policies.models.FulfillmentPolicies;
 import com.ebay.sell.account.policies.models.FulfillmentPolicy;
 
@@ -36,7 +36,7 @@ public class FulfillmentPolicyClientImpl extends EbayClientImpl implements Fulfi
 	}
 
 	@Override
-	public FulfillmentPolicy getDefaultFulfillmentPolicy(final Marketplace marketplace, final CategoryType.Name name) {
+	public FulfillmentPolicy getDefaultFulfillmentPolicy(final Marketplace marketplace, final PolicyCategoryType.Name name) {
 		final WebTarget webTarget = getWebTarget().queryParam(MARKETPLACE_ID_QUERY_PARAMETER, marketplace.getId());
 		final FulfillmentPolicies fulfillmentPolicies = get(webTarget, FulfillmentPolicies.class, Status.OK);
 		final Optional<FulfillmentPolicy> optionalDefaultFulfillmentPolicy = fulfillmentPolicies
@@ -53,9 +53,9 @@ public class FulfillmentPolicyClientImpl extends EbayClientImpl implements Fulfi
 		return super.getWebTarget().path(FULFILLMENT_POLICY_RESOURCE);
 	}
 
-	private Predicate<FulfillmentPolicy> findDefaultPolicyForCategoryType(final CategoryType.Name name) {
+	private Predicate<FulfillmentPolicy> findDefaultPolicyForCategoryType(final PolicyCategoryType.Name name) {
 		return fulfillmentPolicy -> {
-			final CategoryType categoryType = fulfillmentPolicy.getCategoryTypes().stream().findFirst().get();
+			final PolicyCategoryType categoryType = fulfillmentPolicy.getCategoryTypes().stream().findFirst().get();
 			return categoryType.isDefault() && name.toString().equals(categoryType.getName());
 		};
 	}

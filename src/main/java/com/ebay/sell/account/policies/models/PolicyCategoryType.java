@@ -1,6 +1,6 @@
 package com.ebay.sell.account.policies.models;
 
-public class CategoryType {
+public class PolicyCategoryType {
 
 	public enum Name {
 		ALL_EXCLUDING_MOTORS_VEHICLES, MOTORS_VEHICLES
