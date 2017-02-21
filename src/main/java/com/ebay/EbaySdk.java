@@ -12,9 +12,15 @@ import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
 import com.ebay.models.Marketplace;
 import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.account.policies.clients.FulfillmentPolicyClient;
+import com.ebay.sell.account.policies.clients.PaymentPolicyClient;
+import com.ebay.sell.account.policies.clients.ReturnPolicyClient;
 import com.ebay.sell.account.policies.clients.impl.FulfillmentPolicyClientImpl;
+import com.ebay.sell.account.policies.clients.impl.PaymentPolicyClientImpl;
+import com.ebay.sell.account.policies.clients.impl.ReturnPolicyClientImpl;
 import com.ebay.sell.account.policies.models.FulfillmentPolicy;
+import com.ebay.sell.account.policies.models.PaymentPolicy;
 import com.ebay.sell.account.policies.models.PolicyCategoryType;
+import com.ebay.sell.account.policies.models.ReturnPolicy;
 import com.ebay.sell.inventory.inventoryitemgroups.clients.InventoryItemGroupClient;
 import com.ebay.sell.inventory.inventoryitemgroups.clients.impl.InventoryItemGroupClientImpl;
 import com.ebay.sell.inventory.inventoryitemgroups.models.InventoryItemGroup;
@@ -33,7 +39,7 @@ import com.ebay.shopping.categories.clients.impl.CategoryClientImpl;
 import com.ebay.shopping.categories.models.CategoryType;
 
 public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, OfferClient, CategoryClient,
-		InventoryLocationClient, FulfillmentPolicyClient {
+		InventoryLocationClient, FulfillmentPolicyClient, PaymentPolicyClient, ReturnPolicyClient {
 
 	public static final URI SANDBOX_URI = URI.create("https://api.sandbox.ebay.com");
 	public static final URI PRODUCTION_URI = URI.create("https://api.ebay.com");
@@ -48,6 +54,8 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	private final CategoryClient categoryClient;
 	private final InventoryLocationClient inventoryLocationClient;
 	private final FulfillmentPolicyClient fulfillmentPolicyClient;
+	private final PaymentPolicyClient paymentPolicyClient;
+	private final ReturnPolicyClient returnPolicyClient;
 
 	public static interface ClientIdStep {
 		ClientSecretStep withClientId(final String clientId);
@@ -190,6 +198,26 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		return fulfillmentPolicyClient.getDefaultFulfillmentPolicy(marketplace, name);
 	}
 
+	@Override
+	public List<PaymentPolicy> getPaymentPolicies(final Marketplace marketplace) {
+		return paymentPolicyClient.getPaymentPolicies(marketplace);
+	}
+
+	@Override
+	public PaymentPolicy getDefaultPaymentPolicy(final Marketplace marketplace, final PolicyCategoryType.Name name) {
+		return paymentPolicyClient.getDefaultPaymentPolicy(marketplace, name);
+	}
+
+	@Override
+	public List<ReturnPolicy> getReturnPolicies(final Marketplace marketplace) {
+		return returnPolicyClient.getReturnPolicies(marketplace);
+	}
+
+	@Override
+	public ReturnPolicy getDefaultReturnPolicy(final Marketplace marketplace, final PolicyCategoryType.Name name) {
+		return returnPolicyClient.getDefaultReturnPolicy(marketplace, name);
+	}
+
 	private EbaySdk(final Steps steps) {
 		this.refreshToken = steps.refreshToken;
 
@@ -199,6 +227,8 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		this.categoryClient = steps.categoryClient;
 		this.inventoryLocationClient = steps.inventoryLocationClient;
 		this.fulfillmentPolicyClient = steps.fulfillmentPolicyClient;
+		this.paymentPolicyClient = steps.paymentPolicyClient;
+		this.returnPolicyClient = steps.returnPolicyClient;
 	}
 
 	private static class Steps implements ClientIdStep, ClientSecretStep, CredentialsStep, CodeStep, SandboxStep,
@@ -212,6 +242,8 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		private CategoryClient categoryClient;
 		private InventoryLocationClient inventoryLocationClient;
 		private FulfillmentPolicyClient fulfillmentPolicyClient;
+		private PaymentPolicyClient paymentPolicyClient;
+		private ReturnPolicyClient returnPolicyClient;
 
 		private String clientId;
 		private String clientSecret;
@@ -238,6 +270,8 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 			categoryClient = new CategoryClientImpl(clientId, shoppingUri);
 			inventoryLocationClient = new InventoryLocationClientImpl(baseUri, userToken, requestRetryConfiguration);
 			fulfillmentPolicyClient = new FulfillmentPolicyClientImpl(baseUri, userToken, requestRetryConfiguration);
+			paymentPolicyClient = new PaymentPolicyClientImpl(baseUri, userToken, requestRetryConfiguration);
+			returnPolicyClient = new ReturnPolicyClientImpl(baseUri, userToken, requestRetryConfiguration);
 
 			return new EbaySdk(this);
 		}
