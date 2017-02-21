@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.ebay.identity.ouath2.token.clients.impl.TokenClientImpl;
-import com.ebay.models.Marketplace;
 import com.ebay.models.RequestRetryConfiguration;
 import com.ebay.sell.inventory.inventoryitems.clients.impl.InventoryItemClientImpl;
 import com.ebay.sell.inventory.inventoryitems.models.InventoryItem;
@@ -27,7 +26,6 @@ public class EbaySdkTest {
 	private static final char EQUAL = '=';
 	private static final char AMPERSAND = '&';
 	private static final char FORWARD_SLASH = '/';
-	private static final Marketplace SOME_MARKETPLACE = Marketplace.CANADA_FRENCH;
 	private static final String SOME_CLIENT_ID = "some-client-id";
 	private static final String SOME_CLIENT_SECRET = "some-client-secret";
 	private static final String SOME_REFRESH_TOKEN = "some-refresh-token";
@@ -52,12 +50,10 @@ public class EbaySdkTest {
 		final RequestRetryConfiguration requestRetryConfiguration = RequestRetryConfiguration.newBuilder()
 				.withMininumWait(100, TimeUnit.MILLISECONDS).withTimeout(300, TimeUnit.MILLISECONDS).build();
 		final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(SOME_CLIENT_ID).withClientSecret(SOME_CLIENT_SECRET)
-				.withMarketplace(SOME_MARKETPLACE).withRefreshToken(SOME_REFRESH_TOKEN)
-				.withRequestRetryConfiguration(requestRetryConfiguration).withBaseUri(baseUri).withShoppingUri(baseUri)
-				.build();
+				.withRefreshToken(SOME_REFRESH_TOKEN).withRequestRetryConfiguration(requestRetryConfiguration)
+				.withBaseUri(baseUri).withShoppingUri(baseUri).build();
 
 		assertEquals(SOME_REFRESH_TOKEN, ebaySdk.getRefreshToken());
-		assertEquals(SOME_MARKETPLACE, ebaySdk.getMarketplace());
 
 		mockGetInventoryItem();
 
@@ -86,12 +82,11 @@ public class EbaySdkTest {
 		final RequestRetryConfiguration requestRetryConfiguration = RequestRetryConfiguration.newBuilder()
 				.withMininumWait(100, TimeUnit.MILLISECONDS).withTimeout(300, TimeUnit.MILLISECONDS).build();
 		final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(SOME_CLIENT_ID).withClientSecret(SOME_CLIENT_SECRET)
-				.withMarketplace(SOME_MARKETPLACE).withRuName(SOME_RU_NAME).withCode(SOME_AUTHORIZATION_CODE)
+				.withRuName(SOME_RU_NAME).withCode(SOME_AUTHORIZATION_CODE)
 				.withRequestRetryConfiguration(requestRetryConfiguration).withBaseUri(baseUri).withShoppingUri(baseUri)
 				.build();
 
 		assertEquals(SOME_REFRESH_TOKEN, ebaySdk.getRefreshToken());
-		assertEquals(SOME_MARKETPLACE, ebaySdk.getMarketplace());
 
 		mockGetInventoryItem();
 

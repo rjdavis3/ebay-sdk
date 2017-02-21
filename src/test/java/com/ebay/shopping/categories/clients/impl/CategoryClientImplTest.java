@@ -54,16 +54,16 @@ public class CategoryClientImplTest {
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		final URI baseUri = URI.create(driver.getBaseUrl());
-		categoryClient = new CategoryClientImpl(SOME_CLIENT_ID, SOME_MARKETPLACE, baseUri);
+		categoryClient = new CategoryClientImpl(SOME_CLIENT_ID, baseUri);
 	}
 
 	@Test
-	public void given293CategoryIdWhenRetrievingCategoryThenReturnConsumerElectronicsCategory() {
+	public void giveSomeMarketplaceAnd293CategoryIdWhenRetrievingCategoryThenReturnConsumerElectronicsCategory() {
 		final String expectedCategoryId = CONSUMER_ELECTRONICS_CATEGORY_ID;
 		final String expectedResponseBody = CONSUMER_ELECTRONICS_XML_RESPONSE_BODY;
 		getSingleCategory(expectedCategoryId, expectedResponseBody);
 
-		final CategoryType actualCategory = categoryClient.getCategory(expectedCategoryId);
+		final CategoryType actualCategory = categoryClient.getCategory(SOME_MARKETPLACE, expectedCategoryId);
 
 		assertEquals(CONSUMER_ELECTRONICS_CATEGORY_ID, actualCategory.getCategoryID());
 		assertEquals(CONSUMER_ELECTRONICS_CATEGORY_LEVEL, actualCategory.getCategoryLevel());
@@ -75,54 +75,56 @@ public class CategoryClientImplTest {
 	}
 
 	@Test
-	public void given9001CategoryIdWhenRetrievingCategoryThenReturnNullCategory() {
+	public void giveSomeMarketplaceAnd9001CategoryIdWhenRetrievingCategoryThenReturnNullCategory() {
 		final String expectedCategoryId = "9001";
 		final String expectedResponseBody = INVALID_CATEGORY_ON_CURRENT_SITE_XML_RESPONSE_BODY;
 		getSingleCategory(expectedCategoryId, expectedResponseBody);
 
-		final CategoryType actualCategory = categoryClient.getCategory(expectedCategoryId);
+		final CategoryType actualCategory = categoryClient.getCategory(SOME_MARKETPLACE, expectedCategoryId);
 
 		assertNull(actualCategory);
 	}
 
 	@Test(expected = EbayErrorException.class)
-	public void given293CategoryIdAndInvalidApplicationIdWhenRetrievingCategoryThenThrowNewEbayErrorException() {
+	public void giveSomeMarketplaceAnd293CategoryIdAndInvalidApplicationIdWhenRetrievingCategoryThenThrowNewEbayErrorException() {
 		final String expectedCategoryId = CONSUMER_ELECTRONICS_CATEGORY_ID;
 		final String expectedResponseBody = INVALID_APPLICATION_ID_XML_RESPONSE_BODY;
 		getSingleCategory(expectedCategoryId, expectedResponseBody);
 
-		categoryClient.getCategory(expectedCategoryId);
+		categoryClient.getCategory(SOME_MARKETPLACE, expectedCategoryId);
 	}
 
 	@Test
-	public void given293CategoryIdWhenRetrievingCategoryChildrenThenReturnConsumerElectronicsCategoryAndAllOfItsChildrenCategories() {
+	public void giveSomeMarketplaceAnd293CategoryIdWhenRetrievingCategoryChildrenThenReturnConsumerElectronicsCategoryAndAllOfItsChildrenCategories() {
 		final String expectedCategoryId = CONSUMER_ELECTRONICS_CATEGORY_ID;
 		final String expectedResponseBody = CONSUMER_ELECTRONICS_WITH_CHILDREN_XML_RESPONSE_BODY;
 		getCategoryChildren(expectedCategoryId, expectedResponseBody);
 
-		final List<CategoryType> actualChildren = categoryClient.getCategoryWithChildren(expectedCategoryId);
+		final List<CategoryType> actualChildren = categoryClient.getCategoryWithChildren(SOME_MARKETPLACE,
+				expectedCategoryId);
 
 		assertEquals(13, actualChildren.size());
 	}
 
 	@Test
-	public void given9001CategoryIdWhenRetrievingCategoryChildrenThenReturnEmptyCategoryList() {
+	public void giveSomeMarketplaceAnd9001CategoryIdWhenRetrievingCategoryChildrenThenReturnEmptyCategoryList() {
 		final String expectedCategoryId = "9001";
 		final String expectedResponseBody = INVALID_CATEGORY_ON_CURRENT_SITE_XML_RESPONSE_BODY;
 		getCategoryChildren(expectedCategoryId, expectedResponseBody);
 
-		final List<CategoryType> actualChildren = categoryClient.getCategoryWithChildren(expectedCategoryId);
+		final List<CategoryType> actualChildren = categoryClient.getCategoryWithChildren(SOME_MARKETPLACE,
+				expectedCategoryId);
 
 		assertEquals(Collections.emptyList(), actualChildren);
 	}
 
 	@Test(expected = EbayErrorException.class)
-	public void given293CategoryIdAndInvalidApplicationIdWhenRetrievingCategoryChildrenThenThrowNewEbayErrorException() {
+	public void giveSomeMarketplaceAnd293CategoryIdAndInvalidApplicationIdWhenRetrievingCategoryChildrenThenThrowNewEbayErrorException() {
 		final String expectedCategoryId = CONSUMER_ELECTRONICS_CATEGORY_ID;
 		final String expectedResponseBody = INVALID_APPLICATION_ID_XML_RESPONSE_BODY;
 		getCategoryChildren(expectedCategoryId, expectedResponseBody);
 
-		categoryClient.getCategoryWithChildren(expectedCategoryId);
+		categoryClient.getCategoryWithChildren(SOME_MARKETPLACE, expectedCategoryId);
 	}
 
 	private void getSingleCategory(final String expectedCategoryId, final String expectedResponseBody) {

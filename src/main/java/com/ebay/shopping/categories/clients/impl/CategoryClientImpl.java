@@ -44,21 +44,19 @@ public class CategoryClientImpl implements CategoryClient {
 			.property(ClientProperties.READ_TIMEOUT, 600000);
 
 	private final String clientId;
-	private final String shoppingSiteId;
 	private final URI uri;
 
-	public CategoryClientImpl(final String clientId, final Marketplace marketplace, final URI uri) {
+	public CategoryClientImpl(final String clientId, final URI uri) {
 		this.clientId = clientId;
-		this.shoppingSiteId = marketplace.getShoppingSiteId();
 		this.uri = uri;
 	}
 
 	@Override
-	public CategoryType getCategory(final String categoryId) {
+	public CategoryType getCategory(final Marketplace marketplace, final String categoryId) {
 		final Response response = CLIENT.target(uri).queryParam(CALL_NAME_QUERY_PARAMETER, GET_CATEGORY_INFO)
 				.queryParam(APP_ID_QUERY_PARAMETER, clientId).queryParam(VERSION_QUERY_PARAMETER, SHOPPING_API_VERSION)
-				.queryParam(SITE_ID_QUERY_PARAMETER, shoppingSiteId).queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId)
-				.request().get();
+				.queryParam(SITE_ID_QUERY_PARAMETER, marketplace.getShoppingSiteId())
+				.queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId).request().get();
 		response.bufferEntity();
 		final GetCategoryInfoResponseType getCategoryInfoResponse = response
 				.readEntity(GetCategoryInfoResponseType.class);
@@ -72,12 +70,12 @@ public class CategoryClientImpl implements CategoryClient {
 	}
 
 	@Override
-	public List<CategoryType> getCategoryWithChildren(final String categoryId) {
+	public List<CategoryType> getCategoryWithChildren(final Marketplace marketplace, final String categoryId) {
 		final Response response = CLIENT.target(uri).queryParam(CALL_NAME_QUERY_PARAMETER, GET_CATEGORY_INFO)
 				.queryParam(INCLUDE_SELECTOR_QUERY_PARAMETER, CHILD_CATEGORIES_SELECTOR)
 				.queryParam(APP_ID_QUERY_PARAMETER, clientId).queryParam(VERSION_QUERY_PARAMETER, SHOPPING_API_VERSION)
-				.queryParam(SITE_ID_QUERY_PARAMETER, shoppingSiteId).queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId)
-				.request().get();
+				.queryParam(SITE_ID_QUERY_PARAMETER, marketplace.getShoppingSiteId())
+				.queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId).request().get();
 		response.bufferEntity();
 		final GetCategoryInfoResponseType getCategoryInfoResponse = response
 				.readEntity(GetCategoryInfoResponseType.class);

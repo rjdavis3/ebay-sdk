@@ -40,7 +40,6 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	public static final URI SHOPPING_SANDBOX_URI = URI.create("http://open.api.sandbox.ebay.com/Shopping");
 	public static final URI SHOPPING_PRODUCTION_URI = URI.create("http://open.api.ebay.com/Shopping");
 
-	private final Marketplace marketplace;
 	private final String refreshToken;
 
 	private final InventoryItemClient inventoryItemClient;
@@ -55,11 +54,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	}
 
 	public static interface ClientSecretStep {
-		MarketplaceStep withClientSecret(final String clientSecret);
-	}
-
-	public static interface MarketplaceStep {
-		CredentialsStep withMarketplace(final Marketplace marketplace);
+		CredentialsStep withClientSecret(final String clientSecret);
 	}
 
 	public static interface CredentialsStep {
@@ -92,10 +87,6 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 
 	public static ClientIdStep newBuilder() {
 		return new Steps();
-	}
-
-	public Marketplace getMarketplace() {
-		return marketplace;
 	}
 
 	public String getRefreshToken() {
@@ -163,13 +154,13 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	}
 
 	@Override
-	public CategoryType getCategory(final String categoryId) {
-		return categoryClient.getCategory(categoryId);
+	public CategoryType getCategory(final Marketplace marketplace, final String categoryId) {
+		return categoryClient.getCategory(marketplace, categoryId);
 	}
 
 	@Override
-	public List<CategoryType> getCategoryWithChildren(final String categoryId) {
-		return categoryClient.getCategoryWithChildren(categoryId);
+	public List<CategoryType> getCategoryWithChildren(final Marketplace marketplace, final String categoryId) {
+		return categoryClient.getCategoryWithChildren(marketplace, categoryId);
 	}
 
 	@Override
@@ -200,7 +191,6 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	}
 
 	private EbaySdk(final Steps steps) {
-		this.marketplace = steps.marketplace;
 		this.refreshToken = steps.refreshToken;
 
 		this.inventoryItemClient = steps.inventoryItemClient;
@@ -211,10 +201,9 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		this.fulfillmentPolicyClient = steps.fulfillmentPolicyClient;
 	}
 
-	private static class Steps implements ClientIdStep, ClientSecretStep, MarketplaceStep, CredentialsStep, CodeStep,
-			SandboxStep, ShoppingUriStep, RequestRetryConfigurationStep, BuildStep {
+	private static class Steps implements ClientIdStep, ClientSecretStep, CredentialsStep, CodeStep, SandboxStep,
+			ShoppingUriStep, RequestRetryConfigurationStep, BuildStep {
 
-		private Marketplace marketplace;
 		private String refreshToken;
 
 		private InventoryItemClient inventoryItemClient;
@@ -246,7 +235,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 			inventoryItemClient = new InventoryItemClientImpl(baseUri, userToken, requestRetryConfiguration);
 			inventoryItemGroupClient = new InventoryItemGroupClientImpl(baseUri, userToken, requestRetryConfiguration);
 			offerClient = new OfferClientImpl(baseUri, userToken, requestRetryConfiguration);
-			categoryClient = new CategoryClientImpl(clientId, marketplace, shoppingUri);
+			categoryClient = new CategoryClientImpl(clientId, shoppingUri);
 			inventoryLocationClient = new InventoryLocationClientImpl(baseUri, userToken, requestRetryConfiguration);
 			fulfillmentPolicyClient = new FulfillmentPolicyClientImpl(baseUri, userToken, requestRetryConfiguration);
 
@@ -284,7 +273,7 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		}
 
 		@Override
-		public MarketplaceStep withClientSecret(final String clientSecret) {
+		public CredentialsStep withClientSecret(final String clientSecret) {
 			this.clientSecret = clientSecret;
 			return this;
 		}
@@ -310,12 +299,6 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 		@Override
 		public BuildStep withShoppingUri(final URI shoppingUri) {
 			this.shoppingUri = shoppingUri;
-			return this;
-		}
-
-		@Override
-		public CredentialsStep withMarketplace(final Marketplace marketplace) {
-			this.marketplace = marketplace;
 			return this;
 		}
 
