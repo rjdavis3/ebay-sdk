@@ -9,6 +9,7 @@ public class InventoryItems {
 	private String href;
 	private String next;
 	private int limit;
+	private int total;
 	private List<InventoryItem> inventoryItems = new LinkedList<>();
 
 	public int getSize() {
@@ -41,6 +42,14 @@ public class InventoryItems {
 
 	public void setLimit(int limit) {
 		this.limit = limit;
+	}
+
+	public int getTotal() {
+		return total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
 	}
 
 	public List<InventoryItem> getInventoryItems() {
