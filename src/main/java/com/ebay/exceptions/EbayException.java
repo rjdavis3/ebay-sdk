@@ -8,4 +8,8 @@ public class EbayException extends RuntimeException {
 		super(message, exception);
 	}
 
+	public EbayException(final String message) {
+		super(message);
+	}
+
 }

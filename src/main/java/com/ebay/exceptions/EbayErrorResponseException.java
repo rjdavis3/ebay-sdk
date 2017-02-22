@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 import com.ebay.clients.models.EbayError;
 import com.ebay.clients.models.ErrorResponse;
 
-public class EbayErrorResponseException extends RuntimeException {
+public class EbayErrorResponseException extends EbayException {
 
 	static final String MESSAGE = "Received unexpected Response Status Code of %d and Body of:\n%s";
 
