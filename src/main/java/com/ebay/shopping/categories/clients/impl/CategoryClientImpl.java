@@ -15,6 +15,7 @@ import com.ebay.models.Marketplace;
 import com.ebay.shopping.categories.clients.CategoryClient;
 import com.ebay.shopping.categories.models.AckCodeType;
 import com.ebay.shopping.categories.models.CategoryType;
+import com.ebay.shopping.categories.models.ErrorType;
 import com.ebay.shopping.categories.models.GetCategoryInfoResponseType;
 
 /**
@@ -38,6 +39,7 @@ public class CategoryClientImpl implements CategoryClient {
 	static final String SHOPPING_API_VERSION = "981";
 	static final String CHILD_CATEGORIES_SELECTOR = "childcategories";
 
+	private static final String INVALID_CATEGORY_ID_ERROR_CODE = "10.36";
 	private static final String CATEGORY_INVALID_ON_CURRENT_SITE_ERROR_CODE = "10.54";
 
 	private static final Client CLIENT = ClientBuilder.newClient().property(ClientProperties.CONNECT_TIMEOUT, 60000)
@@ -63,7 +65,7 @@ public class CategoryClientImpl implements CategoryClient {
 		if (isSuccess(getCategoryInfoResponse)) {
 			final List<CategoryType> categories = getCategoryInfoResponse.getCategoryArray().getCategory();
 			return categories.stream().findFirst().get();
-		} else if (isCategoryInvalidOnCurrentSite(getCategoryInfoResponse)) {
+		} else if (isInvalidCategory(getCategoryInfoResponse)) {
 			return null;
 		}
 		throw new EbayErrorResponseException(response);
@@ -82,7 +84,7 @@ public class CategoryClientImpl implements CategoryClient {
 		final AckCodeType ackCodeType = getCategoryInfoResponse.getAck();
 		if (AckCodeType.SUCCESS == ackCodeType) {
 			return getCategoryInfoResponse.getCategoryArray().getCategory();
-		} else if (isCategoryInvalidOnCurrentSite(getCategoryInfoResponse)) {
+		} else if (isInvalidCategory(getCategoryInfoResponse)) {
 			return Collections.emptyList();
 		}
 		throw new EbayErrorResponseException(response);
@@ -92,9 +94,10 @@ public class CategoryClientImpl implements CategoryClient {
 		return AckCodeType.SUCCESS == getCategoryInfoResponse.getAck();
 	}
 
-	private boolean isCategoryInvalidOnCurrentSite(final GetCategoryInfoResponseType getCategoryInfoResponse) {
-		return AckCodeType.FAILURE == getCategoryInfoResponse.getAck() && CATEGORY_INVALID_ON_CURRENT_SITE_ERROR_CODE
-				.equals(getCategoryInfoResponse.getErrors().stream().findFirst().get().getErrorCode());
+	private boolean isInvalidCategory(final GetCategoryInfoResponseType getCategoryInfoResponse) {
+		return AckCodeType.FAILURE == getCategoryInfoResponse.getAck() && getCategoryInfoResponse.getErrors().stream()
+				.map(ErrorType::getErrorCode).anyMatch(errorCode -> INVALID_CATEGORY_ID_ERROR_CODE.equals(errorCode)
+						|| CATEGORY_INVALID_ON_CURRENT_SITE_ERROR_CODE.equals(errorCode));
 	}
 
 }
