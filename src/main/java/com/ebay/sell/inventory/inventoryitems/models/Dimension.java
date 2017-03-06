@@ -2,6 +2,9 @@ package com.ebay.sell.inventory.inventoryitems.models;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Dimension {
 
 	private BigDecimal height;
@@ -39,6 +42,25 @@ public class Dimension {
 
 	public void setUnit(String unit) {
 		this.unit = unit;
+	}
+
+	@Override
+	public boolean equals(final Object object) {
+		if (object == this) {
+			return true;
+		}
+		if (!(object instanceof Dimension)) {
+			return false;
+		}
+		final Dimension dimension = (Dimension) object;
+		return new EqualsBuilder().append(getHeight(), dimension.getHeight()).append(getLength(), dimension.getLength())
+				.append(getWidth(), dimension.getWidth()).append(getUnit(), dimension.getUnit()).isEquals();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(getHeight()).append(getLength()).append(getWidth()).append(getUnit())
+				.toHashCode();
 	}
 
 }

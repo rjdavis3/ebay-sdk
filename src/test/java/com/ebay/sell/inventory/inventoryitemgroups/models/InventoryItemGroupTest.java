@@ -50,7 +50,7 @@ public class InventoryItemGroupTest {
 
 		final InventoryItemGroup rightHandInventoryItemGroup = new InventoryItemGroup();
 		rightHandInventoryItemGroup.setInventoryItemGroupKey("9212cbda-d9f9-4b7c-8461-63ec09f3b7bf");
-		rightHandInventoryItemGroup.setTitle("clif Bar");
+		rightHandInventoryItemGroup.setTitle("Clif Bar");
 		rightHandInventoryItemGroup.setSubtitle("CB");
 		rightHandInventoryItemGroup.setDescription("Some description");
 		rightHandInventoryItemGroup.setImageUrls(Arrays.asList("image-1", "image-2"));
