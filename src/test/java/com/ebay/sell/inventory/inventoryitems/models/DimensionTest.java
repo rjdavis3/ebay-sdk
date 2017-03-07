@@ -59,15 +59,33 @@ public class DimensionTest {
 	@Test
 	public void givenSameFieldsWhenTestingEqualityThenReturnTrue() {
 		final Dimension leftHandDimension = new Dimension();
-		leftHandDimension.setHeight(new BigDecimal("10"));
-		leftHandDimension.setLength(new BigDecimal("4"));
+		leftHandDimension.setHeight(new BigDecimal("10.0000000"));
+		leftHandDimension.setLength(new BigDecimal("4.3333333333333333333333333333"));
 		leftHandDimension.setWidth(new BigDecimal("6"));
 		leftHandDimension.setUnit("INCH");
 
 		final Dimension rightHandDimension = new Dimension();
 		rightHandDimension.setHeight(new BigDecimal("10"));
-		rightHandDimension.setLength(new BigDecimal("4"));
+		rightHandDimension.setLength(new BigDecimal("4.3333333333"));
 		rightHandDimension.setWidth(new BigDecimal("6"));
+		rightHandDimension.setUnit("INCH");
+
+		assertTrue(leftHandDimension.equals(rightHandDimension));
+		assertEquals(leftHandDimension.hashCode(), rightHandDimension.hashCode());
+	}
+
+	@Test
+	public void givenSameFieldsWithNullValuesWhenTestingEqualityThenReturnTrue() {
+		final Dimension leftHandDimension = new Dimension();
+		leftHandDimension.setHeight(null);
+		leftHandDimension.setLength(null);
+		leftHandDimension.setWidth(null);
+		leftHandDimension.setUnit("INCH");
+
+		final Dimension rightHandDimension = new Dimension();
+		rightHandDimension.setHeight(null);
+		rightHandDimension.setLength(null);
+		rightHandDimension.setWidth(null);
 		rightHandDimension.setUnit("INCH");
 
 		assertTrue(leftHandDimension.equals(rightHandDimension));

@@ -52,11 +52,25 @@ public class AmountTest {
 	public void givenSameFieldsWhenTestingEqualityThenReturnTrue() {
 		final Amount leftHandAmount = new Amount();
 		leftHandAmount.setCurrency("USD");
-		leftHandAmount.setValue(new BigDecimal("10"));
+		leftHandAmount.setValue(new BigDecimal("10.12345678222224"));
 
 		final Amount rightHandAmount = new Amount();
 		rightHandAmount.setCurrency("USD");
-		rightHandAmount.setValue(new BigDecimal("10"));
+		rightHandAmount.setValue(new BigDecimal("10.12345678222223"));
+
+		assertTrue(leftHandAmount.equals(rightHandAmount));
+		assertEquals(leftHandAmount.hashCode(), rightHandAmount.hashCode());
+	}
+
+	@Test
+	public void givenSameFieldsWithNullValueWhenTestingEqualityThenReturnTrue() {
+		final Amount leftHandAmount = new Amount();
+		leftHandAmount.setCurrency("USD");
+		leftHandAmount.setValue(null);
+
+		final Amount rightHandAmount = new Amount();
+		rightHandAmount.setCurrency("USD");
+		rightHandAmount.setValue(null);
 
 		assertTrue(leftHandAmount.equals(rightHandAmount));
 		assertEquals(leftHandAmount.hashCode(), rightHandAmount.hashCode());

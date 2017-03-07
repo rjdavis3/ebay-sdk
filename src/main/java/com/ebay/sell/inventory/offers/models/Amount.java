@@ -1,11 +1,15 @@
 package com.ebay.sell.inventory.offers.models;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Amount {
+
+	private static final int SCALE = 10;
+	private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
 
 	private String currency;
 	private BigDecimal value;
@@ -23,7 +27,7 @@ public class Amount {
 	}
 
 	public void setValue(BigDecimal value) {
-		this.value = value;
+		this.value = (value == null) ? null : value.setScale(SCALE, ROUNDING_MODE).stripTrailingZeros();
 	}
 
 	@Override

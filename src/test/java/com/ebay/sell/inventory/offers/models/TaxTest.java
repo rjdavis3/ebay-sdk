@@ -57,12 +57,28 @@ public class TaxTest {
 		final Tax leftHandTax = new Tax();
 		leftHandTax.setApplyTax(true);
 		leftHandTax.setThirdPartyTaxCategory("WASTE_RECYCLING_FEE");
-		leftHandTax.setVatPercentage(new BigDecimal("2.3"));
+		leftHandTax.setVatPercentage(new BigDecimal("2.33333333333333333"));
 
 		final Tax rightHandTax = new Tax();
 		rightHandTax.setApplyTax(true);
 		rightHandTax.setThirdPartyTaxCategory("WASTE_RECYCLING_FEE");
-		rightHandTax.setVatPercentage(new BigDecimal("2.3"));
+		rightHandTax.setVatPercentage(new BigDecimal("2.3333333333333333333333334"));
+
+		assertTrue(leftHandTax.equals(rightHandTax));
+		assertEquals(leftHandTax.hashCode(), rightHandTax.hashCode());
+	}
+
+	@Test
+	public void givenSameFieldsWithNullVatPercentageWhenTestingEqualityThenReturnTrue() {
+		final Tax leftHandTax = new Tax();
+		leftHandTax.setApplyTax(true);
+		leftHandTax.setThirdPartyTaxCategory("WASTE_RECYCLING_FEE");
+		leftHandTax.setVatPercentage(null);
+
+		final Tax rightHandTax = new Tax();
+		rightHandTax.setApplyTax(true);
+		rightHandTax.setThirdPartyTaxCategory("WASTE_RECYCLING_FEE");
+		rightHandTax.setVatPercentage(null);
 
 		assertTrue(leftHandTax.equals(rightHandTax));
 		assertEquals(leftHandTax.hashCode(), rightHandTax.hashCode());

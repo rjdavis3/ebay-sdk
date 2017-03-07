@@ -51,11 +51,37 @@ public class WeightTest {
 	@Test
 	public void givenSameFieldsWhenTestingEqualityThenReturnTrue() {
 		final Weight leftHandWeight = new Weight();
-		leftHandWeight.setValue(new BigDecimal("10"));
+		leftHandWeight.setValue(new BigDecimal("10.0000"));
 		leftHandWeight.setUnit("GRAM");
 
 		final Weight rightHandWeight = new Weight();
 		rightHandWeight.setValue(new BigDecimal("10"));
+		rightHandWeight.setUnit("GRAM");
+
+		assertTrue(leftHandWeight.equals(rightHandWeight));
+		assertEquals(leftHandWeight.hashCode(), rightHandWeight.hashCode());
+	}
+
+	@Test
+	public void givenSameFieldsUpToTenDecimalsWhenTestingEqualityThenReturnTrue() {
+		final Weight leftHandWeight = new Weight();
+		leftHandWeight.setValue(new BigDecimal("123.45698799988845632588978"));
+		leftHandWeight.setUnit("GRAM");
+
+		final Weight rightHandWeight = new Weight();
+		rightHandWeight.setValue(new BigDecimal("123.4569879998831"));
+		rightHandWeight.setUnit("GRAM");
+
+		assertTrue(leftHandWeight.equals(rightHandWeight));
+		assertEquals(leftHandWeight.hashCode(), rightHandWeight.hashCode());
+	}
+
+	@Test
+	public void givenSameFieldsWithNullValueWhenTestingEqualityThenReturnTrue() {
+		final Weight leftHandWeight = new Weight();
+		leftHandWeight.setUnit("GRAM");
+
+		final Weight rightHandWeight = new Weight();
 		rightHandWeight.setUnit("GRAM");
 
 		assertTrue(leftHandWeight.equals(rightHandWeight));
