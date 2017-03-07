@@ -36,7 +36,7 @@ public class CategoryClientImpl implements CategoryClient {
 	static final String SITE_ID_QUERY_PARAMETER = "siteid";
 	static final String INCLUDE_SELECTOR_QUERY_PARAMETER = "includeselector";
 	static final String GET_CATEGORY_INFO = "GetCategoryInfo";
-	static final String SHOPPING_API_VERSION = "981";
+	static final String SHOPPING_API_VERSION = "963";
 	static final String CHILD_CATEGORIES_SELECTOR = "childcategories";
 
 	private static final String INVALID_CATEGORY_ID_ERROR_CODE = "10.36";
@@ -60,12 +60,12 @@ public class CategoryClientImpl implements CategoryClient {
 				.queryParam(SITE_ID_QUERY_PARAMETER, marketplace.getShoppingSiteId())
 				.queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId).request().get();
 		response.bufferEntity();
-		final GetCategoryInfoResponseType getCategoryInfoResponse = response
+		final GetCategoryInfoResponseType getCategoryInfoResponseType = response
 				.readEntity(GetCategoryInfoResponseType.class);
-		if (isSuccess(getCategoryInfoResponse)) {
-			final List<CategoryType> categories = getCategoryInfoResponse.getCategoryArray().getCategory();
+		if (isSuccess(getCategoryInfoResponseType)) {
+			final List<CategoryType> categories = getCategoryInfoResponseType.getCategoryArray().getCategory();
 			return categories.stream().findFirst().get();
-		} else if (isInvalidCategory(getCategoryInfoResponse)) {
+		} else if (isInvalidCategory(getCategoryInfoResponseType)) {
 			return null;
 		}
 		throw new EbayErrorResponseException(response);
@@ -79,19 +79,19 @@ public class CategoryClientImpl implements CategoryClient {
 				.queryParam(SITE_ID_QUERY_PARAMETER, marketplace.getShoppingSiteId())
 				.queryParam(CATEGORY_ID_QUERY_PARAMETER, categoryId).request().get();
 		response.bufferEntity();
-		final GetCategoryInfoResponseType getCategoryInfoResponse = response
+		final GetCategoryInfoResponseType getCategoryInfoResponseType = response
 				.readEntity(GetCategoryInfoResponseType.class);
-		final AckCodeType ackCodeType = getCategoryInfoResponse.getAck();
-		if (AckCodeType.SUCCESS == ackCodeType) {
-			return getCategoryInfoResponse.getCategoryArray().getCategory();
-		} else if (isInvalidCategory(getCategoryInfoResponse)) {
+		if (isSuccess(getCategoryInfoResponseType)) {
+			return getCategoryInfoResponseType.getCategoryArray().getCategory();
+		} else if (isInvalidCategory(getCategoryInfoResponseType)) {
 			return Collections.emptyList();
 		}
 		throw new EbayErrorResponseException(response);
 	}
 
-	private boolean isSuccess(final GetCategoryInfoResponseType getCategoryInfoResponse) {
-		return AckCodeType.SUCCESS == getCategoryInfoResponse.getAck();
+	private boolean isSuccess(final GetCategoryInfoResponseType getCategoryInfoResponseType) {
+		return (AckCodeType.SUCCESS == getCategoryInfoResponseType.getAck())
+				|| (AckCodeType.WARNING == getCategoryInfoResponseType.getAck());
 	}
 
 	private boolean isInvalidCategory(final GetCategoryInfoResponseType getCategoryInfoResponse) {
