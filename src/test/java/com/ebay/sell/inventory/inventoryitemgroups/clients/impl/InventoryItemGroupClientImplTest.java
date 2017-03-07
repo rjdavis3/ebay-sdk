@@ -19,7 +19,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.clients.models.ErrorResponse;
+import com.ebay.exceptions.EbayErrorResponseException;
+import com.ebay.exceptions.EbayNotFoundResponseException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.ebay.identity.oauth2.token.models.UserToken;
@@ -38,7 +40,6 @@ public class InventoryItemGroupClientImplTest {
 	private static final String SOME_NEW_OAUTH_USER_TOKEN = "v1-ebay-oauth-token-1";
 	private static final String SOME_INVENTORY_ITEM_GROUP_KEY = "1444";
 	private static final String SOME_TITLE = "Clif Bar Energy Bar";
-	private static final String SOME_EBAY_ERROR_MESSAGE = "{\r\n  \"errors\": [\r\n    {\r\n      \"errorId\": 25710,\r\n      \"domain\": \"API_INVENTORY\",\r\n      \"subdomain\": \"Selling\",\r\n      \"category\": \"REQUEST\",\r\n      \"message\": \"We didn't find the entity you are requesting. Please verify the request\"\r\n    }\r\n  ]\r\n}";
 	private static final String SOME_REFRESH_TOKEN = "some-refresh-token";
 
 	private InventoryItemGroupClient inventoryItemGroupClient;
@@ -83,10 +84,11 @@ public class InventoryItemGroupClientImplTest {
 		assertEquals(SOME_TITLE, actualInventoryItemGroup.getTitle());
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void givenSomeInvalidInventoryItemGroupKeyWhenRetrievingInventoryItemGroupThenThrowNewEbayErrorExceptionWith404StatusCodeAndSomeEbayErrorMessage() {
+	@Test(expected = EbayNotFoundResponseException.class)
+	public void givenSomeInvalidInventoryItemGroupKeyWhenRetrievingInventoryItemGroupThenThrowNewEbayNotFoundResponseException() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
-		final String expectedResponseBody = SOME_EBAY_ERROR_MESSAGE;
+		final ErrorResponse errorResponse = new ErrorResponse();
+		final String expectedResponseBody = new JSONObject(errorResponse).toString();
 
 		mockGet(expectedResponseStatus, expectedResponseBody);
 
@@ -128,8 +130,8 @@ public class InventoryItemGroupClientImplTest {
 		assertEquals(SOME_INVENTORY_ITEM_GROUP_KEY, actualResponseBodyJsonNode.get("inventoryItemGroupKey").asText());
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void givenSomeInventoryItemWithInvalidAuthorizationWhenUpdatingInventoryItemGroupThenThrowNewEbayErrorExceptionWith401StatusCodeAndSomeEbayErrorMessage() {
+	@Test(expected = EbayErrorResponseException.class)
+	public void givenSomeInventoryItemGroupWithInvalidTitleWhenUpdatingInventoryItemGroupThenThrowNewEbayErrorResponseException() {
 		final Status expectedResponseStatus = Status.BAD_REQUEST;
 		final InventoryItemGroup inventoryItemGroup = new InventoryItemGroup();
 		inventoryItemGroup.setInventoryItemGroupKey(SOME_INVENTORY_ITEM_GROUP_KEY);
@@ -148,8 +150,8 @@ public class InventoryItemGroupClientImplTest {
 		inventoryItemGroupClient.deleteInventoryItemGroup(SOME_INVENTORY_ITEM_GROUP_KEY);
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void givenSomeInvalidInventoryItemGroupKeyWhenDeletingInventoryItemGroupThenThrowNewEbayErrorExceptionWith404StatusCodeAndSomeEbayErrorMessage() {
+	@Test(expected = EbayErrorResponseException.class)
+	public void givenSomeInvalidInventoryItemGroupKeyWhenDeletingInventoryItemGroupThenReturnInventoryItemGroupWithError() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
 		mockDelete(expectedResponseStatus);
@@ -192,4 +194,5 @@ public class InventoryItemGroupClientImplTest {
 								.withMethod(Method.DELETE),
 				giveEmptyResponse().withStatus(expectedResponseStatus.getStatusCode()));
 	}
+
 }

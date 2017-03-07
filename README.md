@@ -11,7 +11,7 @@ Java SDK for eBay REST APIs
 	<dependency>
 	    <groupId>com.github.rjdavis3</groupId>
 	    <artifactId>ebay-sdk</artifactId>
-	    <version>1.1.0</version>
+	    <version>1.2.0</version>
 	</dependency>
 ```
 
@@ -22,9 +22,8 @@ Creating SDK with refresh token then making a sample call:
 	final RequestRetryConfiguration requestRetryConfiguration = RequestRetryConfiguration.newBuilder()
 			.withMininumWait(5, TimeUnit.SECONDS).withTimeout(2, TimeUnit.MINUTES).build();
 	final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(clientId).withClientSecret(clientSecret)
-			.withMarketplace(Marketplace.UNITED_STATES).withRefreshToken(refreshToken)
-			.withRequestRetryConfiguration(requestRetryConfiguration).withSandbox(false)
-			.build();
+			.withRefreshToken(refreshToken).withRequestRetryConfiguration(requestRetryConfiguration)
+			.withSandbox(false).build();
 	final InventoryItem inventoryItem = ebaySdk.getInventoryItem(sku);
 ```
 
@@ -34,7 +33,7 @@ Creating SDK with RuName and temporary authorization code then making a sample c
 	final RequestRetryConfiguration requestRetryConfiguration = RequestRetryConfiguration.newBuilder()
 			.withMininumWait(5, TimeUnit.SECONDS).withTimeout(2, TimeUnit.MINUTES).build();
 	final EbaySdk ebaySdk = EbaySdk.newBuilder().withClientId(clientId).withClientSecret(clientSecret)
-			.withMarketplace(Marketplace.UNITED_STATES).withRuName(ruName).withCode(authorizationCode)
+			.withRuName(ruName).withCode(authorizationCode)
 			.withRequestRetryConfiguration(requestRetryConfiguration).withSandbox(false)
 			.build();
 	final InventoryItem inventoryItem = ebaySdk.getInventoryItem(sku);

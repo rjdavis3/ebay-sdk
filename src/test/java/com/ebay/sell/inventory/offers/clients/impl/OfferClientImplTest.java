@@ -4,7 +4,6 @@ import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyRespo
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
@@ -21,7 +20,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.clients.models.ErrorResponse;
+import com.ebay.exceptions.EbayErrorResponseException;
+import com.ebay.exceptions.EbayException;
+import com.ebay.exceptions.EbayNotFoundResponseException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.ebay.identity.oauth2.token.models.UserToken;
@@ -87,20 +89,18 @@ public class OfferClientImplTest {
 		assertEquals(SOME_SKU, actualOffer.getSku());
 	}
 
-	@Test
-	public void givenSomeInvalidOfferIdWhenRetrievingOfferThenReturnNullOffer() {
+	@Test(expected = EbayNotFoundResponseException.class)
+	public void givenSomeInvalidOfferIdWhenRetrievingOfferThenThrowNewEbayNotFoundResponseException() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
-		final String expectedResponseBody = null;
+		final String expectedResponseBody = new JSONObject(new ErrorResponse()).toString();
 		mockGetOffer(expectedResponseStatus, expectedResponseBody);
 
-		final Offer actualOffer = offerClient.getOffer(SOME_OFFER_ID);
-
-		assertNull(actualOffer);
+		offerClient.getOffer(SOME_OFFER_ID);
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void givenSomeInternalServerErrorAndSomeOfferIdWhenRetrievingOfferThenThrowNewEbayErrorException() {
+	@Test(expected = EbayException.class)
+	public void givenSomeInternalServerErrorAndSomeOfferIdWhenRetrievingOfferThenThrowNewEbayException() {
 		final Status expectedResponseStatus = Status.INTERNAL_SERVER_ERROR;
 		final String expectedResponseBody = SOME_EBAY_ERROR_MESSAGE;
 		driver.addExpectation(
@@ -134,7 +134,7 @@ public class OfferClientImplTest {
 		assertEquals(SOME_SKU, actualResponseBodyJsonNode.get("sku").asText());
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeOfferWithInvalidMarketPlaceIdWhenUpdatingOfferThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
 		final Offer offer = new Offer();
 		offer.setOfferId(SOME_OFFER_ID);
@@ -169,7 +169,7 @@ public class OfferClientImplTest {
 
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeAlreadyExistingOfferWhenCreatingOfferThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
 		final Offer offer = new Offer();
 		offer.setOfferId(SOME_OFFER_ID);
@@ -225,20 +225,18 @@ public class OfferClientImplTest {
 		assertEquals(SOME_SKU, actualOffer.getSku());
 	}
 
-	@Test
-	public void givenSomeInvalidSkuWhenRetrievingOfferThenReturnNullOffer() {
+	@Test(expected = EbayNotFoundResponseException.class)
+	public void givenSomeInvalidSkuWhenRetrievingOfferThenThrowNewEbayNotFoundResponseException() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
-		final String expectedResponseBody = null;
+		final String expectedResponseBody = new JSONObject(new ErrorResponse()).toString();
 		mockGetOfferBySku(expectedResponseStatus, expectedResponseBody, SOME_OAUTH_USER_TOKEN);
 
-		final Offer actualOffer = offerClient.getOfferBySku(SOME_SKU);
-
-		assertNull(actualOffer);
+		offerClient.getOfferBySku(SOME_SKU);
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void givenInternalServerErrorAndSomeSkuWhenRetrievingOfferThenThrowNewEbayErrorException() {
+	@Test(expected = EbayException.class)
+	public void givenInternalServerErrorAndSomeSkuWhenRetrievingOfferThenThrowNewEbayException() {
 		final Status expectedResponseStatus = Status.INTERNAL_SERVER_ERROR;
 
 		final String expectedResponseBody = SOME_EBAY_ERROR_MESSAGE;
@@ -269,7 +267,7 @@ public class OfferClientImplTest {
 		assertEquals(SOME_LISTING_ID, actualListingId);
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeInvalidOfferIdWhenPublishingOfferThenThrowNewEbayErrorException() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 

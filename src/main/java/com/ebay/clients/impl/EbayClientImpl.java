@@ -19,10 +19,15 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Variant;
 
 import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.clients.models.EbayError;
+import com.ebay.clients.models.ErrorResponse;
+import com.ebay.exceptions.EbayErrorResponseException;
+import com.ebay.exceptions.EbayException;
+import com.ebay.exceptions.EbayNotFoundResponseException;
 import com.ebay.identity.oauth2.token.models.UserToken;
 import com.ebay.models.RequestRetryConfiguration;
 import com.github.rholder.retry.Attempt;
@@ -39,14 +44,18 @@ public class EbayClientImpl {
 	public static final String OAUTH_USER_TOKEN_PREFIX = "Bearer ";
 
 	private static final Client REST_CLIENT = ClientBuilder.newClient()
-			.property(ClientProperties.CONNECT_TIMEOUT, 60000).property(ClientProperties.READ_TIMEOUT, 600000);
+			.property(ClientProperties.CONNECT_TIMEOUT, 60000).property(ClientProperties.READ_TIMEOUT, 600000)
+			.register(JacksonFeature.class);
 	private static final String UTF_8_ENCODING = "utf-8";
 	private static final Variant ENTITY_VARIANT = new Variant(MediaType.APPLICATION_JSON_TYPE, Locale.US,
 			UTF_8_ENCODING);
 	private static final long ONE = 1;
 	private static final long TWO = 2;
 	private static final int TOO_MANY_REQUESTS_STATUS_CODE = 429;
+	private static final int USER_ERROR_ERROR_ID = 25002;
+	private static final int SYSTEM_ERROR_ERROR_ID = 25001;
 	private static final String RETRY_ATTEMPT_MESSAGE = "Waited %s seconds since first retry attempt. This is attempt %s. Retrying due to Response Status Code of %d and Body of:\n%s";
+	private static final String RETRY_FAILED_MESSAGE = "Request retry has failed.";
 	private static final Logger LOGGER = LoggerFactory.getLogger(EbayClientImpl.class);
 
 	private final URI baseUri;
@@ -136,7 +145,7 @@ public class EbayClientImpl {
 		try {
 			return retryer.call(responseCallable);
 		} catch (ExecutionException | RetryException e) {
-			throw new EbayErrorException(e);
+			throw new EbayException(RETRY_FAILED_MESSAGE, e);
 		}
 	}
 
@@ -170,7 +179,17 @@ public class EbayClientImpl {
 
 	private boolean shouldRetryResponse(final Response response) {
 		return Status.Family.SERVER_ERROR == Status.Family.familyOf(response.getStatus())
-				|| TOO_MANY_REQUESTS_STATUS_CODE == response.getStatus();
+				|| TOO_MANY_REQUESTS_STATUS_CODE == response.getStatus() || shouldRetryBadRequest(response);
+	}
+
+	private boolean shouldRetryBadRequest(final Response response) {
+		if (Status.BAD_REQUEST.getStatusCode() == response.getStatus()) {
+			response.bufferEntity();
+			final ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+			return (errorResponse != null) && errorResponse.getErrors().stream().map(EbayError::getErrorId)
+					.anyMatch(errorId -> (SYSTEM_ERROR_ERROR_ID == errorId) || (USER_ERROR_ERROR_ID == errorId));
+		}
+		return false;
 	}
 
 	private <T> T handleResponse(final Response response, final Class<T> entityType, final Status... expectedStatus) {
@@ -178,16 +197,21 @@ public class EbayClientImpl {
 				.collect(Collectors.toList());
 		if (expectedStatusCodes.contains(response.getStatus())) {
 			return response.readEntity(entityType);
+		} else if (Status.NOT_FOUND.getStatusCode() == response.getStatus()) {
+			throw new EbayNotFoundResponseException(response);
 		}
-		throw new EbayErrorException(response);
+		throw new EbayErrorResponseException(response);
 	}
 
 	private void handleResponse(final Response response, final Status... expectedStatus) {
 		final List<Integer> expectedStatusCodes = Arrays.asList(expectedStatus).stream().map(Status::getStatusCode)
 				.collect(Collectors.toList());
-		if (!expectedStatusCodes.contains(response.getStatus())) {
-			throw new EbayErrorException(response);
+		if (expectedStatusCodes.contains(response.getStatus())) {
+			return;
+		} else if (Status.NOT_FOUND.getStatusCode() == response.getStatus()) {
+			throw new EbayNotFoundResponseException(response);
 		}
+		throw new EbayErrorResponseException(response);
 	}
 
 	private String getUserToken() {

@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.exceptions.EbayErrorResponseException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.github.restdriver.clientdriver.ClientDriverRequest.Method;
@@ -65,7 +65,7 @@ public class TokenClientImplTest {
 		assertExpectedToken(actualToken);
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenValidRuNameAndInvalidAuthorizationCodeWhenGeneratingAccessTokenThenThrowNewEbayErrorException()
 			throws JAXBException {
 		final String ruName = "some-RuName";
@@ -102,7 +102,7 @@ public class TokenClientImplTest {
 		assertExpectedToken(actualToken);
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenExpiredRefreshTokenWhenRefreshingAccessTokenThenThrowNewEbayErrorException() {
 		final String refreshToken = "some-refresh-token";
 

@@ -19,7 +19,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.ebay.exceptions.EbayErrorException;
+import com.ebay.clients.models.ErrorResponse;
+import com.ebay.exceptions.EbayErrorResponseException;
+import com.ebay.exceptions.EbayNotFoundResponseException;
 import com.ebay.identity.oauth2.token.clients.TokenClient;
 import com.ebay.identity.oauth2.token.models.Token;
 import com.ebay.identity.oauth2.token.models.UserToken;
@@ -38,7 +40,6 @@ public class InventoryItemClientImplTest {
 	private static final String SOME_OAUTH_USER_TOKEN = "v1-ebay-oauth-token";
 	private static final String SOME_NEW_OAUTH_USER_TOKEN = "v1-ebay-oauth-token-1";
 	private static final String SOME_SKU = "1444";
-	private static final String SOME_EBAY_ERROR_MESSAGE = "{\r\n  \"errors\": [\r\n    {\r\n      \"errorId\": 25710,\r\n      \"domain\": \"API_INVENTORY\",\r\n      \"subdomain\": \"Selling\",\r\n      \"category\": \"REQUEST\",\r\n      \"message\": \"We didn't find the entity you are requesting. Please verify the request\"\r\n    }\r\n  ]\r\n}";
 	private static final String SOME_REFRESH_TOKEN = "some-refresh-token";
 
 	private InventoryItemClient inventoryItemClient;
@@ -83,7 +84,7 @@ public class InventoryItemClientImplTest {
 
 	@Test
 	public void givenSomeValidSkuAndExpiredAccessTokenWhenRetrievingInventoryItemThenRefreshAccessTokenAndReturnInventoryItem() {
-		mockGetInventoryItem(Status.UNAUTHORIZED, SOME_EBAY_ERROR_MESSAGE);
+		mockGetInventoryItem(Status.UNAUTHORIZED, new JSONObject(new ErrorResponse()).toString());
 		final Token token = new Token();
 		token.setAccessToken(SOME_NEW_OAUTH_USER_TOKEN);
 		token.setRefreshToken(SOME_REFRESH_TOKEN);
@@ -109,11 +110,11 @@ public class InventoryItemClientImplTest {
 		assertEquals(SOME_SKU, actualInventoryItem.getSku());
 	}
 
-	@Test(expected = EbayErrorException.class)
-	public void givenSomeInvalidSkuWhenRetrievingInventoryItemThenThrowNewEbayErrorExceptionWith404StatusCodeAndSomeEbayErrorMessage() {
+	@Test(expected = EbayNotFoundResponseException.class)
+	public void givenSomeInvalidSkuWhenRetrievingInventoryItemThenThrowNewEbayNotFoundResponseException() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
-		final String expectedResponseBody = SOME_EBAY_ERROR_MESSAGE;
+		final String expectedResponseBody = new JSONObject(new ErrorResponse()).toString();
 		mockGetInventoryItem(expectedResponseStatus, expectedResponseBody);
 
 		inventoryItemClient.getInventoryItem(SOME_SKU);
@@ -134,7 +135,7 @@ public class InventoryItemClientImplTest {
 		assertEquals(SOME_SKU, actualResponseBodyJsonNode.get("sku").asText());
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeInventoryItemWithInvalidConditionWhenUpdatingInventoryItemThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
 		final Status expectedResponseStatus = Status.BAD_REQUEST;
 
@@ -157,7 +158,7 @@ public class InventoryItemClientImplTest {
 
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeInvalidSkuWhenDeletingInventoryItemThenThrowNewEbayErrorExceptionWith404StatusCodeAndSomeEbayErrorMessage() {
 		final Status expectedResponseStatus = Status.NOT_FOUND;
 
@@ -192,13 +193,13 @@ public class InventoryItemClientImplTest {
 		assertEquals(limit, actualInventoryItems.getLimit());
 	}
 
-	@Test(expected = EbayErrorException.class)
+	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeInvlaidOffsetWhenRetrievingInventoryItemsThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
 		final int limit = 1;
 		final int offset = 2;
 
 		final Status expectedResponseStatus = Status.BAD_REQUEST;
-		final String expectedResponseBody = SOME_EBAY_ERROR_MESSAGE;
+		final String expectedResponseBody = new JSONObject(new ErrorResponse()).toString();
 		driver.addExpectation(
 				onRequestTo(InventoryItemClientImpl.INVENTORY_ITEM_RESOURCE)
 						.withParam(InventoryItemClientImpl.LIMIT_QUERY_PARAMETER, limit)

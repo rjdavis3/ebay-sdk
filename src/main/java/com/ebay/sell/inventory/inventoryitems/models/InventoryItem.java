@@ -1,5 +1,8 @@
 package com.ebay.sell.inventory.inventoryitems.models;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class InventoryItem {
 
 	private String sku;
@@ -45,8 +48,7 @@ public class InventoryItem {
 		return packageWeightAndSize;
 	}
 
-	public void setPackageWeightAndSize(
-			PackageWeightAndSize packageWeightAndSize) {
+	public void setPackageWeightAndSize(PackageWeightAndSize packageWeightAndSize) {
 		this.packageWeightAndSize = packageWeightAndSize;
 	}
 
@@ -56,6 +58,29 @@ public class InventoryItem {
 
 	public void setProduct(Product product) {
 		this.product = product;
+	}
+
+	@Override
+	public boolean equals(final Object object) {
+		if (object == this) {
+			return true;
+		}
+		if (!(object instanceof InventoryItem)) {
+			return false;
+		}
+		final InventoryItem inventoryItem = (InventoryItem) object;
+		return new EqualsBuilder().append(getSku(), inventoryItem.getSku())
+				.append(getCondition(), inventoryItem.getCondition())
+				.append(getConditionDescription(), inventoryItem.getConditionDescription())
+				.append(getAvailability(), inventoryItem.getAvailability())
+				.append(getPackageWeightAndSize(), inventoryItem.getPackageWeightAndSize())
+				.append(getProduct(), inventoryItem.getProduct()).isEquals();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(getSku()).append(getCondition()).append(getConditionDescription())
+				.append(getAvailability()).append(getPackageWeightAndSize()).append(getProduct()).toHashCode();
 	}
 
 }

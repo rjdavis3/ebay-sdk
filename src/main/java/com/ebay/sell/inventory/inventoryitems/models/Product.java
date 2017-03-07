@@ -1,19 +1,28 @@
 package com.ebay.sell.inventory.inventoryitems.models;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+@XmlRootElement
 public class Product {
 
 	private String brand;
 	private String description;
-	private List<String> ean = new LinkedList<String>();
-	private List<String> imageUrls = new LinkedList<String>();
-	private List<String> isbn = new LinkedList<String>();
+	private List<String> ean = new LinkedList<>();
+	private List<String> imageUrls = new LinkedList<>();
+	private List<String> isbn = new LinkedList<>();
 	private String mpn;
 	private String subtitle;
 	private String title;
-	private List<String> upc = new LinkedList<String>();
+	private List<String> upc = new LinkedList<>();
+	private Map<String, List<String>> aspects = new HashMap<>();
 
 	public String getBrand() {
 		return brand;
@@ -85,6 +94,38 @@ public class Product {
 
 	public void setUpc(List<String> upc) {
 		this.upc = upc;
+	}
+
+	public Map<String, List<String>> getAspects() {
+		return aspects;
+	}
+
+	public void setAspects(Map<String, List<String>> aspects) {
+		this.aspects = aspects;
+	}
+
+	@Override
+	public boolean equals(final Object object) {
+		if (object == this) {
+			return true;
+		}
+		if (!(object instanceof Product)) {
+			return false;
+		}
+		final Product product = (Product) object;
+		return new EqualsBuilder().append(getBrand(), product.getBrand())
+				.append(getDescription(), product.getDescription()).append(getEan(), product.getEan())
+				.append(getImageUrls(), product.getImageUrls()).append(getIsbn(), product.getIsbn())
+				.append(getMpn(), product.getMpn()).append(getSubtitle(), product.getSubtitle())
+				.append(getTitle(), product.getTitle()).append(getUpc(), product.getUpc())
+				.append(getAspects(), product.getAspects()).isEquals();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(getBrand()).append(getDescription()).append(getEan()).append(getImageUrls())
+				.append(getIsbn()).append(getMpn()).append(getSubtitle()).append(getTitle()).append(getUpc())
+				.append(getAspects()).toHashCode();
 	}
 
 }
