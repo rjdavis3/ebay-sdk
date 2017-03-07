@@ -2,6 +2,8 @@
 
 set -e
 
+echo "starting deployment script"
+
 # only do deployment, when travis detects a new tag
 if [ ! -z "$TRAVIS_TAG" ]
 then
@@ -25,3 +27,5 @@ then
 else
     echo "not on a tag -> keep snapshot version in pom.xml"
 fi
+
+echo "ending deployment script"

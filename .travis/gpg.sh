@@ -2,6 +2,8 @@
 
 set -e
 
+echo "starting gpg script"
+
 # create a random passphrase
 export GPG_PASSPHRASE=$(echo "$RANDOM$(date)" | md5sum | cut -d\  -f1)
 
@@ -46,3 +48,5 @@ while(true); do
   date
   gpg --keyserver keyserver.ubuntu.com  --recv-keys ${GPG_KEYNAME} && break || sleep 30
 done
+
+echo "ending gpg script"
