@@ -35,7 +35,7 @@ public class OfferClientImpl extends EbayClientImpl implements OfferClient {
 	@Override
 	public void updateOffer(final Offer offer) {
 		final WebTarget webTarget = getWebTarget().path(offer.getOfferId());
-		put(webTarget, offer, Status.NO_CONTENT);
+		put(webTarget, offer, Status.OK, Status.NO_CONTENT);
 	}
 
 	@Override
