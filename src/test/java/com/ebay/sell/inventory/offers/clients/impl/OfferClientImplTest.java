@@ -134,6 +134,23 @@ public class OfferClientImplTest {
 		assertEquals(SOME_SKU, actualResponseBodyJsonNode.get("sku").asText());
 	}
 
+	@Test
+	public void givenSomeOfferWhenUpdatingOfferThenReturn200StatusCode() {
+		final Status expectedResponseStatus = Status.OK;
+
+		final Offer offer = new Offer();
+		offer.setOfferId(SOME_OFFER_ID);
+		offer.setSku(SOME_SKU);
+
+		final JsonBodyCapture actualResponseBody = mockUpdateOffer(expectedResponseStatus);
+
+		offerClient.updateOffer(offer);
+
+		final JsonNode actualResponseBodyJsonNode = actualResponseBody.getContent();
+		assertEquals(SOME_OFFER_ID, actualResponseBodyJsonNode.get("offerId").asText());
+		assertEquals(SOME_SKU, actualResponseBodyJsonNode.get("sku").asText());
+	}
+
 	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeOfferWithInvalidMarketPlaceIdWhenUpdatingOfferThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
 		final Offer offer = new Offer();
