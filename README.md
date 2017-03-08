@@ -11,7 +11,7 @@ Java SDK for eBay REST APIs
 	<dependency>
 	    <groupId>com.github.rjdavis3</groupId>
 	    <artifactId>ebay-sdk</artifactId>
-	    <version>1.2.1</version>
+	    <version>1.2.3</version>
 	</dependency>
 ```
 
