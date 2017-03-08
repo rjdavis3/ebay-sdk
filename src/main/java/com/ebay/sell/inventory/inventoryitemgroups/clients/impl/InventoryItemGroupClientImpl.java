@@ -37,7 +37,7 @@ public class InventoryItemGroupClientImpl extends EbayClientImpl implements Inve
 	@Override
 	public void updateInventoryItemGroup(final InventoryItemGroup inventoryItemGroup) {
 		final WebTarget webTarget = getWebTarget().path(inventoryItemGroup.getInventoryItemGroupKey());
-		put(webTarget, inventoryItemGroup, Status.NO_CONTENT);
+		put(webTarget, inventoryItemGroup, Status.OK, Status.NO_CONTENT);
 	}
 
 	@Override

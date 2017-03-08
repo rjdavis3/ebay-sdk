@@ -110,6 +110,20 @@ public class InventoryItemGroupClientImplTest {
 	}
 
 	@Test
+	public void givenSomeInventoryItemWhenUpdatingInventoryItemGroupThenReturn200StatusCode() {
+		final Status expectedResponseStatus = Status.OK;
+		final InventoryItemGroup inventoryItemGroup = new InventoryItemGroup();
+		inventoryItemGroup.setInventoryItemGroupKey(SOME_INVENTORY_ITEM_GROUP_KEY);
+
+		final JsonBodyCapture actualResponseBody = mockPut(expectedResponseStatus, SOME_OAUTH_USER_TOKEN);
+
+		inventoryItemGroupClient.updateInventoryItemGroup(inventoryItemGroup);
+
+		final JsonNode actualResponseBodyJsonNode = actualResponseBody.getContent();
+		assertEquals(SOME_INVENTORY_ITEM_GROUP_KEY, actualResponseBodyJsonNode.get("inventoryItemGroupKey").asText());
+	}
+
+	@Test
 	public void givenSomeInventoryItemAndExpiredAccessTokenWhenUpdatingInventoryItemGroupThenRefreshAcessTokenAndUpdateInventoryItemAndReturn204StatusCode() {
 		mockPut(Status.UNAUTHORIZED, SOME_OAUTH_USER_TOKEN);
 

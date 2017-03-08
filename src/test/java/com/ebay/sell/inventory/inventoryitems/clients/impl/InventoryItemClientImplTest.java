@@ -135,6 +135,21 @@ public class InventoryItemClientImplTest {
 		assertEquals(SOME_SKU, actualResponseBodyJsonNode.get("sku").asText());
 	}
 
+	@Test
+	public void givenSomeInventoryItemWhenUpdatingInventoryItemThenReturn200StatusCode() {
+		final Status expectedResponseStatus = Status.OK;
+
+		final InventoryItem inventoryItem = new InventoryItem();
+		inventoryItem.setSku(SOME_SKU);
+
+		final JsonBodyCapture actualResponseBody = mockUpdateInventoryItem(expectedResponseStatus);
+
+		inventoryItemClient.updateInventoryItem(inventoryItem);
+
+		final JsonNode actualResponseBodyJsonNode = actualResponseBody.getContent();
+		assertEquals(SOME_SKU, actualResponseBodyJsonNode.get("sku").asText());
+	}
+
 	@Test(expected = EbayErrorResponseException.class)
 	public void givenSomeInventoryItemWithInvalidConditionWhenUpdatingInventoryItemThenThrowNewEbayErrorExceptionWith400StatusCodeAndSomeEbayErrorMessage() {
 		final Status expectedResponseStatus = Status.BAD_REQUEST;
