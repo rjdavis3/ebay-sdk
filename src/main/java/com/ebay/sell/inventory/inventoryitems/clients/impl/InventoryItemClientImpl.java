@@ -32,7 +32,7 @@ public class InventoryItemClientImpl extends EbayClientImpl implements Inventory
 	@Override
 	public void updateInventoryItem(final InventoryItem inventoryItem) {
 		final WebTarget webTarget = getWebTarget().path(inventoryItem.getSku());
-		put(webTarget, inventoryItem, Status.NO_CONTENT);
+		put(webTarget, inventoryItem, Status.OK, Status.NO_CONTENT);
 	}
 
 	@Override
