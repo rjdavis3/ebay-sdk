@@ -2,6 +2,7 @@ package com.ebay.sell.inventory.offers.models;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Currency;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -27,7 +28,7 @@ public class Amount {
 	}
 
 	public void setValue(BigDecimal value) {
-		this.value = (value == null) ? null : value.setScale(SCALE, ROUNDING_MODE).stripTrailingZeros();
+		this.value = (value == null) ? null : value.setScale(getScale(), ROUNDING_MODE).stripTrailingZeros();
 	}
 
 	@Override
@@ -46,6 +47,14 @@ public class Amount {
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder().append(getCurrency()).append(getValue()).toHashCode();
+	}
+
+	private int getScale() {
+		try {
+			return Currency.getInstance(getCurrency()).getDefaultFractionDigits();
+		} catch (Exception e) {
+			return SCALE;
+		}
 	}
 
 }
