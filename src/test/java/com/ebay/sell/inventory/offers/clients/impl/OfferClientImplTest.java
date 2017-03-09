@@ -294,6 +294,24 @@ public class OfferClientImplTest {
 		offerClient.publishOffer(SOME_OFFER_ID);
 	}
 
+	@Test
+	public void givenSomeValidOfferIdWhenDeletingOfferThenReturnListingId() {
+		final Status expectedResponseStatus = Status.NO_CONTENT;
+
+		mockDeleteOffer(expectedResponseStatus);
+
+		offerClient.deleteOffer(SOME_OFFER_ID);
+	}
+
+	@Test(expected = EbayErrorResponseException.class)
+	public void givenSomeInvalidOfferIdWhenDeletingOfferThenThrowNewEbayErrorException() {
+		final Status expectedResponseStatus = Status.NOT_FOUND;
+
+		mockDeleteOffer(expectedResponseStatus);
+
+		offerClient.deleteOffer(SOME_OFFER_ID);
+	}
+
 	private void mockGetOffer(final Status expectedResponseStatus, final String expectedResponseBody) {
 		driver.addExpectation(
 				onRequestTo(new StringBuilder().append(OfferClientImpl.OFFER_RESOURCE).append(FORWARD_SLASH)
@@ -355,6 +373,17 @@ public class OfferClientImplTest {
 								.withMethod(Method.POST),
 				giveResponse(expectedResponseBody, MediaType.APPLICATION_JSON)
 						.withStatus(expectedResponseStatus.getStatusCode()));
+	}
+
+	private void mockDeleteOffer(final Status expectedResponseStatus) {
+		driver.addExpectation(
+				onRequestTo(new StringBuilder().append(OfferClientImpl.OFFER_RESOURCE).append(FORWARD_SLASH)
+						.append(SOME_OFFER_ID).toString())
+								.withHeader(OfferClientImpl.AUTHORIZATION_HEADER,
+										new StringBuilder().append(OfferClientImpl.OAUTH_USER_TOKEN_PREFIX)
+												.append(SOME_OAUTH_USER_TOKEN).toString())
+								.withMethod(Method.DELETE),
+				giveEmptyResponse().withStatus(expectedResponseStatus.getStatusCode()));
 	}
 
 }

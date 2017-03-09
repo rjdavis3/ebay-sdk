@@ -49,14 +49,42 @@ public class AmountTest {
 	}
 
 	@Test
-	public void givenSameFieldsWhenTestingEqualityThenReturnTrue() {
+	public void givenSameValuesToTwoDecimalPlacesAndUSDCurrencyWhenTestingEqualityThenReturnTrue() {
 		final Amount leftHandAmount = new Amount();
 		leftHandAmount.setCurrency("USD");
-		leftHandAmount.setValue(new BigDecimal("10.12345678222224"));
+		leftHandAmount.setValue(new BigDecimal("20.016"));
 
 		final Amount rightHandAmount = new Amount();
 		rightHandAmount.setCurrency("USD");
-		rightHandAmount.setValue(new BigDecimal("10.12345678222223"));
+		rightHandAmount.setValue(new BigDecimal("20.02"));
+
+		assertTrue(leftHandAmount.equals(rightHandAmount));
+		assertEquals(leftHandAmount.hashCode(), rightHandAmount.hashCode());
+	}
+
+	@Test
+	public void givenSameValuesToTwoDecimalPlacesAndNullCurrencyWhenTestingEqualityThenReturnFalse() {
+		final Amount leftHandAmount = new Amount();
+		leftHandAmount.setCurrency(null);
+		leftHandAmount.setValue(new BigDecimal("20.016"));
+
+		final Amount rightHandAmount = new Amount();
+		rightHandAmount.setCurrency(null);
+		rightHandAmount.setValue(new BigDecimal("20.02"));
+
+		assertFalse(leftHandAmount.equals(rightHandAmount));
+		assertFalse(leftHandAmount.hashCode() == rightHandAmount.hashCode());
+	}
+
+	@Test
+	public void givenSameValuesToTenDecimalPlacesAndNullCurrencyWhenTestingEqualityThenReturnTrue() {
+		final Amount leftHandAmount = new Amount();
+		leftHandAmount.setCurrency(null);
+		leftHandAmount.setValue(new BigDecimal("20.123456789267"));
+
+		final Amount rightHandAmount = new Amount();
+		rightHandAmount.setCurrency(null);
+		rightHandAmount.setValue(new BigDecimal("20.123456789268"));
 
 		assertTrue(leftHandAmount.equals(rightHandAmount));
 		assertEquals(leftHandAmount.hashCode(), rightHandAmount.hashCode());

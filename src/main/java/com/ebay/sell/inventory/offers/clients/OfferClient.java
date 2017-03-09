@@ -14,4 +14,6 @@ public interface OfferClient {
 
 	public String publishOffer(final String offerId);
 
+	public void deleteOffer(final String offerId);
+
 }

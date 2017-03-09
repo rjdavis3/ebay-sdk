@@ -60,7 +60,14 @@ public class OfferClientImpl extends EbayClientImpl implements OfferClient {
 	}
 
 	@Override
+	public void deleteOffer(final String offerId) {
+		final WebTarget webTarget = getWebTarget().path(offerId);
+		delete(webTarget, Status.NO_CONTENT);
+	}
+
+	@Override
 	protected WebTarget getWebTarget() {
 		return super.getWebTarget().path(OFFER_RESOURCE);
 	}
+
 }
