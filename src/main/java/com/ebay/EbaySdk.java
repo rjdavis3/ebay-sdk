@@ -127,6 +127,11 @@ public class EbaySdk implements InventoryItemGroupClient, InventoryItemClient, O
 	}
 
 	@Override
+	public void deleteOffer(final String offerId) {
+		offerClient.deleteOffer(offerId);
+	}
+
+	@Override
 	public InventoryItem getInventoryItem(final String sku) {
 		return inventoryItemClient.getInventoryItem(sku);
 	}
