@@ -3,11 +3,15 @@ package com.ebay.sell.inventory.inventoryitems.models;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InventoryItems {
 
 	private int size;
 	private String href;
 	private String next;
+	private String prev;
 	private int limit;
 	private int total;
 	private List<InventoryItem> inventoryItems = new LinkedList<>();
@@ -34,6 +38,14 @@ public class InventoryItems {
 
 	public void setNext(String next) {
 		this.next = next;
+	}
+
+	public String getPrev() {
+		return prev;
+	}
+
+	public void setPrev(String prev) {
+		this.prev = prev;
 	}
 
 	public int getLimit() {
